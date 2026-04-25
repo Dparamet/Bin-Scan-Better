@@ -59,6 +59,7 @@ import {
 } from 'lucide-react';
 import * as Icons from 'lucide-react';
 import { cn, WASTE_CATEGORIES, RECENT_SCANS } from './lib/utils';
+import { translations, type Language } from './translations';
 
 // --- Types ---
 interface UserState {
@@ -97,7 +98,8 @@ function NavItem({ to, icon: Icon, label, active }: { to: string, icon: any, lab
   );
 }
 
-function Header({ user }: { user: UserState | null }) {
+function Header({ user, lang, setLang }: { user: UserState | null, lang: Language, setLang: (l: Language) => void }) {
+  const t = translations[lang];
   if (!user) return null;
   return (
     <header className="sticky top-0 z-50 w-full glass border-b border-slate-100 px-6 py-3">
@@ -110,19 +112,28 @@ function Header({ user }: { user: UserState | null }) {
         </Link>
         
         <nav className="hidden md:flex items-center gap-8">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-full border border-orange-100">
-            <Flame size={16} fill="currentColor" />
-            <span className="font-bold text-xs">{user.streak} day streak</span>
+          <div className="flex items-center gap-4">
+             <button 
+               onClick={() => setLang(lang === 'en' ? 'th' : 'en')}
+               className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-full border border-slate-100 hover:bg-slate-100 transition-colors font-bold text-[10px] uppercase tracking-widest"
+             >
+               <Globe size={14} />
+               {lang === 'en' ? 'ไทย' : 'ENG'}
+             </button>
+             <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-full border border-orange-100">
+               <Flame size={16} fill="currentColor" />
+               <span className="font-bold text-xs">{user.streak} {t.dayStreak}</span>
+             </div>
           </div>
           <div className="flex items-center gap-6">
-            <Link to="/" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">Dashboard</Link>
-            <Link to="/league" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">League</Link>
-            <Link to="/guide" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">Guide</Link>
+            <Link to="/" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">{t.dashboard}</Link>
+            <Link to="/league" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">{t.league}</Link>
+            <Link to="/guide" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">{t.guide}</Link>
           </div>
           <div className="h-6 w-px bg-slate-200" />
           <Link to="/settings" className="flex items-center gap-3 group">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold text-slate-400 leading-none uppercase tracking-widest">Level 12</p>
+              <p className="text-[10px] font-bold text-slate-400 leading-none uppercase tracking-widest">{t.level} 12</p>
               <p className="text-sm font-bold text-slate-900 leading-none mt-1">{user.name.split(' ')[0]}</p>
             </div>
             <div className="w-9 h-9 rounded-xl overflow-hidden border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
@@ -135,16 +146,17 @@ function Header({ user }: { user: UserState | null }) {
   );
 }
 
-function MobileNav({ user }: { user: UserState | null }) {
+function MobileNav({ user, lang }: { user: UserState | null, lang: Language }) {
   const location = useLocation();
+  const t = translations[lang];
   if (!user) return null;
   return (
     <nav className="md:hidden fixed bottom-6 left-6 right-6 z-50 glass rounded-3xl shadow-2xl flex justify-around items-center px-2 py-2">
-      <NavItem to="/" icon={LayoutDashboard} label="Home" active={location.pathname === '/'} />
-      <NavItem to="/league" icon={Trophy} label="Rank" active={location.pathname === '/league'} />
-      <NavItem to="/guide" icon={BookOpen} label="Guide" active={location.pathname === '/guide'} />
-      <NavItem to="/history" icon={HistoryIcon} label="Log" active={location.pathname === '/history'} />
-      <NavItem to="/settings" icon={SettingsIcon} label="User" active={location.pathname.startsWith('/settings')} />
+      <NavItem to="/" icon={LayoutDashboard} label={t.home} active={location.pathname === '/'} />
+      <NavItem to="/league" icon={Trophy} label={t.rank} active={location.pathname === '/league'} />
+      <NavItem to="/guide" icon={BookOpen} label={t.guide} active={location.pathname === '/guide'} />
+      <NavItem to="/history" icon={HistoryIcon} label={t.log} active={location.pathname === '/history'} />
+      <NavItem to="/settings" icon={SettingsIcon} label={t.user} active={location.pathname.startsWith('/settings')} />
     </nav>
   );
 }
@@ -165,8 +177,9 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
 
 // --- Pages ---
 
-function LoginPage({ onLogin }: { onLogin: () => void }) {
+function LoginPage({ onLogin, lang }: { onLogin: () => void, lang: Language }) {
   const navigate = useNavigate();
+  const t = translations[lang];
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <motion.div 
@@ -179,11 +192,11 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
           <Recycle size={32} strokeWidth={2.5} />
         </div>
         <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">EcoTrack</h1>
-        <p className="text-slate-500 mb-10 font-medium">Your journey to sustainability starts here.</p>
+        <p className="text-slate-500 mb-10 font-medium">{t.everyActionCounts}</p>
         
         <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); navigate('/'); }}>
           <div className="text-left">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Email Address</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
               <input 
@@ -207,21 +220,22 @@ function LoginPage({ onLogin }: { onLogin: () => void }) {
             </div>
           </div>
           <button className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95 group mt-6">
-            Sign In
+            {t.signIn}
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
         
         <p className="mt-10 text-sm text-slate-500 font-medium italic">
-          No account yet? <Link to="/register" className="text-primary font-bold hover:underline not-italic">Join the community</Link>
+          No account yet? <Link to="/register" className="text-primary font-bold hover:underline not-italic">{t.register}</Link>
         </p>
       </motion.div>
     </div>
   );
 }
 
-function RegisterPage({ onLogin }: { onLogin: () => void }) {
+function RegisterPage({ onLogin, lang }: { onLogin: () => void, lang: Language }) {
   const navigate = useNavigate();
+  const t = translations[lang];
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <motion.div 
@@ -233,12 +247,12 @@ function RegisterPage({ onLogin }: { onLogin: () => void }) {
         <div className="inline-flex w-16 h-16 bg-primary/10 text-primary rounded-2xl items-center justify-center mb-8">
           <Leaf size={32} strokeWidth={2.5} />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">Join EcoTrack</h1>
-        <p className="text-slate-500 mb-10 font-medium">Every action counts. Start yours today.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">{t.joinEcoTrack}</h1>
+        <p className="text-slate-500 mb-10 font-medium">{t.everyActionCounts}</p>
         
         <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); navigate('/'); }}>
           <div className="text-left">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Full Name</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.fullName}</label>
             <div className="relative group">
               <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
               <input 
@@ -250,7 +264,7 @@ function RegisterPage({ onLogin }: { onLogin: () => void }) {
             </div>
           </div>
           <div className="text-left">
-             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Email Address</label>
+             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
               <input 
@@ -274,13 +288,13 @@ function RegisterPage({ onLogin }: { onLogin: () => void }) {
             </div>
           </div>
           <button className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95 group mt-6">
-            Create Account
+            {t.joinEcoTrack}
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
         
         <p className="mt-10 text-sm text-slate-500 font-medium italic">
-          Already a member? <Link to="/login" className="text-primary font-bold hover:underline not-italic">Sign In</Link>
+          Already a member? <Link to="/login" className="text-primary font-bold hover:underline not-italic">{t.signIn}</Link>
         </p>
       </motion.div>
     </div>
@@ -298,8 +312,9 @@ function StatCard({ icon: Icon, label, value, color }: any) {
   );
 }
 
-function Dashboard() {
+function Dashboard({ lang }: { lang: Language }) {
   const navigate = useNavigate();
+  const t = translations[lang];
   return (
     <PageWrapper>
       <section className="bg-white rounded-3xl border border-slate-100 p-8 md:p-12 mb-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 card-shadow">
@@ -309,7 +324,7 @@ function Dashboard() {
             <Sparkles size={14} className="animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-wider">New Challenges Available</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-[1.1] tracking-tight">One scan at a time, for a <span className="text-primary italic">greener</span> planet.</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-[1.1] tracking-tight">{t.oneScanAtATime.split(',')[0]}, <span className="text-primary italic">{lang === 'en' ? 'greener' : 'เขียวขจี'}</span> {t.oneScanAtATime.split(',')[1]}</h1>
           <p className="text-lg text-slate-500 mb-8 leading-relaxed max-w-md">Our AI helps you sort waste instantly. Earn points, compete in leagues, and make a real impact.</p>
           <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start">
             <button 
@@ -317,7 +332,7 @@ function Dashboard() {
               className="bg-primary text-white font-bold px-8 py-4 rounded-2xl flex items-center gap-3 hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 active:scale-95 text-lg"
             >
               <QrCode size={22} />
-              Start Scanning
+              {t.startScanning}
             </button>
             <button className="px-8 py-4 bg-slate-50 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all">
               Tutorial
@@ -335,11 +350,11 @@ function Dashboard() {
       </section>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
-        <StatCard icon={CheckCircle2} label="Scans" value="1,248" color="bg-rose-50 text-rose-500" />
-        <StatCard icon={Leaf} label="CO2 Saved" value="342kg" color="bg-emerald-50 text-emerald-500" />
-        <StatCard icon={Trophy} label="Rank" value="Silver II" color="bg-amber-50 text-amber-500" />
+        <StatCard icon={CheckCircle2} label={t.scans} value="1,248" color="bg-rose-50 text-rose-500" />
+        <StatCard icon={Leaf} label={t.co2Saved} value="342kg" color="bg-emerald-50 text-emerald-500" />
+        <StatCard icon={Trophy} label={t.rank} value="Silver II" color="bg-amber-50 text-amber-500" />
         <div className="bg-slate-900 p-6 rounded-3xl shadow-xl text-white col-span-2 md:col-span-1 border border-slate-800">
-           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Next Rank</p>
+           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t.nextRank}</p>
            <div className="flex justify-between items-end mb-3">
              <span className="text-2xl font-bold italic text-amber-400">Gold</span>
              <span className="text-xs font-medium text-slate-400">85% complete</span>
@@ -358,8 +373,8 @@ function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <section className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm p-8 card-shadow">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-xl font-bold text-slate-900">Recent Activity</h2>
-            <Link to="/history" className="text-primary text-sm font-bold hover:underline">See history</Link>
+            <h2 className="text-xl font-bold text-slate-900">{t.recentActivity}</h2>
+            <Link to="/history" className="text-primary text-sm font-bold hover:underline">{t.seeHistory}</Link>
           </div>
           <div className="space-y-3">
             {RECENT_SCANS.slice(0, 4).map((scan) => (
@@ -384,7 +399,7 @@ function Dashboard() {
 
         <section className="bg-primary/5 rounded-3xl border border-primary/10 p-8 relative overflow-hidden">
           <div className="relative z-10">
-            <h2 className="text-xl font-bold text-primary mb-2">Daily Goal</h2>
+            <h2 className="text-xl font-bold text-primary mb-2">{t.dailyGoal}</h2>
             <p className="text-sm text-primary/70 font-medium mb-6">Scan 5 more items today to keep your streak!</p>
             
             <div className="space-y-4">
@@ -394,14 +409,14 @@ function Dashboard() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-900">Current Streak</p>
-                  <p className="text-xs font-semibold text-slate-500">12 days and counting</p>
+                  <p className="text-xs font-semibold text-slate-500">12 {lang === 'en' ? 'days' : 'วัน'} {lang === 'en' ? 'and counting' : 'และกำลังเพิ่มขึ้น'}</p>
                 </div>
               </div>
               <button 
                 onClick={() => navigate('/scan')}
                 className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-sm"
               >
-                Scan Now
+                {t.scanNow}
               </button>
             </div>
           </div>
@@ -412,8 +427,9 @@ function Dashboard() {
   );
 }
 
-function ScanPage() {
+function ScanPage({ lang }: { lang: Language }) {
   const navigate = useNavigate();
+  const t = translations[lang];
   const [isScanning, setIsScanning] = useState(true);
   const [result, setResult] = useState<any>(null);
 
@@ -421,14 +437,14 @@ function ScanPage() {
     const timer = setTimeout(() => {
       setIsScanning(false);
       setResult({
-        name: 'Plastic Water Bottle',
-        category: 'Recyclable',
+        name: lang === 'en' ? 'Plastic Water Bottle' : 'ขวดน้ำพลาสติก',
+        category: lang === 'en' ? 'Recyclable' : 'รีไซเคิลได้',
         points: 15,
-        tip: 'Remove the cap if it is a different type of plastic.'
+        tip: lang === 'en' ? 'Remove the cap if it is a different type of plastic.' : 'ถอดฝาออกหากเป็นพลาสติกคนละชนิดกัน'
       });
     }, 3000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [lang]);
 
   return (
     <PageWrapper>
@@ -438,7 +454,7 @@ function ScanPage() {
           className="mb-6 flex items-center gap-2 text-slate-400 font-bold hover:text-primary transition-colors text-sm"
         >
           <ChevronLeft size={18} />
-          Back
+          {t.back}
         </button>
 
         <div className="relative aspect-[3/4] bg-slate-950 rounded-[40px] overflow-hidden shadow-2xl border-4 border-white">
@@ -470,7 +486,7 @@ function ScanPage() {
                 </motion.div>
                 <div className="mt-12 glass px-6 py-3 rounded-2xl text-white font-bold flex items-center gap-3">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                  Analyzing Material...
+                  {t.analyzing}
                 </div>
               </>
             ) : (
@@ -483,16 +499,16 @@ function ScanPage() {
                   <div className="w-16 h-16 bg-emerald-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <Sparkles size={32} />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-1">Success!</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-1">{t.success}</h2>
                   <p className="text-lg font-bold text-primary mb-6">{result.name}</p>
                   
                   <div className="bg-slate-50 p-5 rounded-2xl mb-8 text-left space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Category</span>
+                      <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Category' : 'หมวดหมู่'}</span>
                       <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg font-bold text-[10px] uppercase tracking-wider">{result.category}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Points Gained</span>
+                      <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Points Gained' : 'คะแนนที่ได้รับ'}</span>
                       <span className="text-lg font-bold text-slate-900">+{result.points}</span>
                     </div>
                     <div className="pt-4 border-t border-slate-200">
@@ -505,13 +521,13 @@ function ScanPage() {
                       onClick={() => navigate('/')}
                       className="flex-1 bg-primary text-white font-bold py-4 rounded-xl hover:bg-primary-dark transition-all active:scale-95"
                     >
-                      Dashboard
+                      {t.dashboard}
                     </button>
                     <button 
                       onClick={() => setIsScanning(true)}
                       className="flex-1 bg-slate-100 text-slate-600 font-bold py-4 rounded-xl hover:bg-slate-200 transition-all active:scale-95"
                     >
-                      Scan More
+                      {t.scanMore}
                     </button>
                   </div>
                 </div>
@@ -524,7 +540,8 @@ function ScanPage() {
   );
 }
 
-function LeaguePage() {
+function LeaguePage({ lang }: { lang: Language }) {
+  const t = translations[lang];
   const [activeLeague] = useState('Silver');
   const LEAGUE_PLAYERS = [
     { id: 1, name: 'EcoHero_99', points: 4250, streak: 15, avatar: 'https://i.pravatar.cc/150?u=1' },
@@ -545,11 +562,11 @@ function LeaguePage() {
           </div>
           <div className="text-center md:text-left flex-1">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-               <span className="text-xs font-bold px-3 py-1 bg-amber-100 text-amber-700 rounded-full uppercase tracking-widest">{activeLeague} League</span>
-               <span className="text-xs font-bold text-slate-400">• Season 4</span>
+               <span className="text-xs font-bold px-3 py-1 bg-amber-100 text-amber-700 rounded-full uppercase tracking-widest">{activeLeague} {lang === 'en' ? 'League' : 'ลีก'}</span>
+               <span className="text-xs font-bold text-slate-400">• {lang === 'en' ? 'Season 4' : 'ฤดูกาลที่ 4'}</span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">You're in 2nd place!</h1>
-            <p className="text-slate-500 font-medium leading-tight">Stay in the top 3 until Sunday to promote to <span className="text-amber-600 font-bold underline decoration-amber-200">Gold League</span>.</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">{lang === 'en' ? "You're in 2nd place!" : "คุณอยู่อันดับที่ 2!"}</h1>
+            <p className="text-slate-500 font-medium leading-tight">{lang === 'en' ? 'Stay in the top 3 until Sunday to promote to' : 'รักษาอันดับให้อยู่ใน 3 อันดับแรกจนถึงวันอาทิตย์เพื่อเลื่อนระดับไปสู่'} <span className="text-amber-600 font-bold underline decoration-amber-200">{lang === 'en' ? 'Gold League' : 'ลีกระดับทอง'}</span>.</p>
           </div>
           <div className="flex items-center gap-2 text-slate-900 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
              <Timer size={20} className="text-primary" />
@@ -559,8 +576,8 @@ function LeaguePage() {
 
         <div className="bg-white rounded-[32px] border border-slate-100 card-shadow overflow-hidden">
           <div className="px-8 py-4 bg-slate-50/50 border-b border-slate-100 flex justify-between items-center">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">Leaderboard</span>
-            <span className="text-[10px] font-bold text-primary uppercase tracking-widest font-mono">Promotion Zone</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">{lang === 'en' ? 'Leaderboard' : 'ตารางผู้นำ'}</span>
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest font-mono">{lang === 'en' ? 'Promotion Zone' : 'โซนเลื่อนระดับ'}</span>
           </div>
           <div className="divide-y divide-slate-100">
             {LEAGUE_PLAYERS.map((p, idx) => (
@@ -599,12 +616,13 @@ function LeaguePage() {
   );
 }
 
-function Guide() {
+function Guide({ lang }: { lang: Language }) {
+  const t = translations[lang];
   return (
     <PageWrapper>
       <div className="max-w-2xl mb-12">
-        <h1 className="text-4xl font-bold text-slate-900 mb-4 tracking-tight">Eco-Sorting Guide</h1>
-        <p className="text-lg text-slate-500 font-medium">Master the art of sorting. Proper disposal reduces landfill waste by up to 60%.</p>
+        <h1 className="text-4xl font-bold text-slate-900 mb-4 tracking-tight">{t.guide}</h1>
+        <p className="text-lg text-slate-500 font-medium">{lang === 'en' ? 'Master the art of sorting. Proper disposal reduces landfill waste by up to 60%.' : 'เก่งเรื่องการคัดแยกขยะ การกำจัดอย่างถูกวิธีช่วยลดขยะในหลุมฝังกลบได้ถึง 60%'}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -622,7 +640,7 @@ function Guide() {
               )}>
                  <Recycle size={24} />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">{cat.title}</h2>
+              <h2 className="text-xl font-bold text-slate-900">{(t.categories as any)[cat.id] || cat.title}</h2>
             </div>
             
             <p className="text-slate-500 mb-6 text-sm leading-relaxed">{cat.description}</p>
@@ -642,7 +660,6 @@ function Guide() {
             </div>
 
             <div className="pt-6 border-t border-slate-50 flex items-start gap-2">
-              <Info size={14} className="text-slate-300 shrink-0 mt-0.5" />
               <span className="text-xs font-medium text-slate-400 leading-tight italic">"{cat.noLimit}"</span>
             </div>
           </motion.div>
@@ -652,19 +669,20 @@ function Guide() {
   );
 }
 
-function History() {
+function History({ lang }: { lang: Language }) {
+  const t = translations[lang];
   return (
     <PageWrapper>
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">Scan Activity</h1>
-          <p className="text-slate-500 mt-2 font-medium">Tracking your real-world contribution.</p>
+          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">{t.recentActivity}</h1>
+          <p className="text-slate-500 mt-2 font-medium">{lang === 'en' ? 'Tracking your real-world contribution.' : 'ติดตามการมีส่วนร่วมของคุณในโลกความเป็นจริง'}</p>
         </div>
         <div className="relative w-full md:w-96">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
             type="text" 
-            placeholder="Search your logs..." 
+            placeholder={lang === 'en' ? 'Search your logs...' : 'ค้นหาบันทึกของคุณ...'} 
             className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-100 bg-white focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-sm"
           />
         </div>
@@ -673,16 +691,16 @@ function History() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <div className="bg-white p-8 rounded-3xl border border-slate-100 card-shadow flex flex-col gap-2 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -mr-12 -mt-12 opacity-50" />
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Lifetime Score</p>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Lifetime Score' : 'คะแนนตลอดชีพ'}</p>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold text-slate-900 tracking-tight">2,450</span>
-            <span className="text-xs font-bold text-primary">+120 today</span>
+            <span className="text-xs font-bold text-primary">+{lang === 'en' ? '120 today' : '120 วันนี้'}</span>
           </div>
         </div>
         
         <div className="bg-white p-8 rounded-3xl border border-slate-100 card-shadow flex flex-col gap-2 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 opacity-50" />
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Global Rank</p>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Global Rank' : 'อันดับโลก'}</p>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold text-slate-900 tracking-tight">#42</span>
             <span className="text-xs font-bold text-primary">Top 1%</span>
@@ -691,7 +709,7 @@ function History() {
 
         <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-full h-full bg-primary/10 -skew-x-12 translate-x-1/2" />
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Impact Tier</p>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">{lang === 'en' ? 'Impact Tier' : 'ระดับผลกระทบ'}</p>
           <div className="flex items-center gap-3 relative z-10">
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-primary">
               <Leaf size={24} />
@@ -702,19 +720,19 @@ function History() {
       </div>
 
       <section className="bg-white rounded-3xl border border-slate-100 card-shadow p-8">
-        <h2 className="text-xl font-bold text-slate-900 mb-8">Activity Flow</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-8">{t.recentActivity}</h2>
         
         <div className="space-y-6">
           <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             <Calendar size={12} />
-            Today
+            {lang === 'en' ? 'Today' : 'วันนี้'}
           </div>
           <HistoryItem icon={Droplets} name="PET Plastic Bottle" category="Beverage Container" points={15} time="10:42 AM" />
           <HistoryItem icon={BookOpen} name="Cardboard Box" category="Packaging" points={20} time="09:15 AM" />
           
           <div className="pt-4 flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
             <Calendar size={12} />
-            Yesterday
+            {lang === 'en' ? 'Yesterday' : 'เมื่อวาน'}
           </div>
           <HistoryItem icon={Leaf} name="Coffee Cup" category="Compostable Material" points={10} time="02:30 PM" />
           <HistoryItem icon={Recycle} name="Egg Carton" category="Molded Pulp" points={25} time="11:05 AM" />
@@ -722,7 +740,7 @@ function History() {
         
         <div className="mt-12 text-center">
           <button className="text-primary text-sm font-bold px-10 py-4 bg-primary/5 rounded-2xl hover:bg-primary/10 transition-all active:scale-95">
-            Load More Activity
+            {lang === 'en' ? 'Load More Activity' : 'โหลดกิจกรรมเพิ่มเติม'}
           </button>
         </div>
       </section>
@@ -750,8 +768,9 @@ function HistoryItem({ icon: Icon, name, category, points, time }: any) {
   );
 }
 
-function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpdate: (data: Partial<UserState>) => void, onCancel: () => void }) {
+function EditProfilePage({ user, onUpdate, onCancel, lang }: { user: UserState, onUpdate: (data: Partial<UserState>) => void, onCancel: () => void, lang: Language }) {
   const [formData, setFormData] = useState({ name: user.name, bio: user.bio, email: user.email });
+  const t = translations[lang];
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
@@ -763,7 +782,7 @@ function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpda
         <button onClick={onCancel} className="p-2.5 hover:bg-slate-100 rounded-xl transition-colors">
           <ChevronLeft size={20} className="text-slate-500" />
         </button>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Edit Profile</h1>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{t.editProfile}</h1>
       </div>
 
       <section className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow space-y-10">
@@ -778,12 +797,12 @@ function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpda
               <Camera size={16} />
             </button>
           </div>
-          <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">Tap to change photo</p>
+          <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">{lang === 'en' ? 'Tap to change photo' : 'แตะเพื่อเปลี่ยนรูปภาพ'}</p>
         </div>
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">Full Name</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.fullName}</label>
             <input 
               type="text" 
               value={formData.name}
@@ -792,7 +811,7 @@ function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpda
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">Bio</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.bio}</label>
             <textarea 
               rows={3}
               value={formData.bio}
@@ -802,7 +821,7 @@ function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpda
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">Email</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.email}</label>
             <input 
               type="email" 
               value={formData.email}
@@ -818,13 +837,13 @@ function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpda
             className="flex-1 bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 active:scale-95"
           >
             <Save size={18} />
-            Save
+            {t.saveChanges}
           </button>
           <button 
             onClick={onCancel}
             className="flex-1 bg-slate-100 text-slate-500 font-bold py-4 rounded-xl hover:bg-slate-200 transition-all active:scale-95"
           >
-            Cancel
+            {t.cancel}
           </button>
         </div>
       </section>
@@ -832,7 +851,7 @@ function EditProfilePage({ user, onUpdate, onCancel }: { user: UserState, onUpda
   );
 }
 
-function SettingsMain({ user, onLogout }: { user: UserState, onLogout: () => void }) {
+function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () => void, lang: Language }) {
   return (
     <div className="space-y-8">
       <section className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow flex flex-col sm:flex-row items-center sm:items-start gap-8">
@@ -854,27 +873,27 @@ function SettingsMain({ user, onLogout }: { user: UserState, onLogout: () => voi
           <p className="text-slate-400 font-medium text-sm mb-4">{user.email}</p>
           <p className="text-slate-500 text-sm max-w-sm leading-relaxed">{user.bio}</p>
           <div className="mt-6 pt-6 border-t border-slate-50">
-             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Member since {user.joined}</p>
+             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{lang === 'en' ? 'Member since' : 'เป็นสมาชิกตั้งแต่'} {user.joined}</p>
           </div>
         </div>
       </section>
 
       <section className="bg-white rounded-3xl border border-slate-100 card-shadow overflow-hidden">
         <div className="bg-slate-50/50 px-8 py-4 border-b border-slate-100">
-           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Account Management</span>
+           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{lang === 'en' ? 'Account Management' : 'การจัดการบัญชี'}</span>
         </div>
         <div className="divide-y divide-slate-100">
           <Link to="/settings/edit" className="block">
-             <SettingsItem icon={LayoutDashboard} title="Personal Info" sub="Name, avatar, and bio" />
+             <SettingsItem icon={LayoutDashboard} title={lang === 'en' ? "Personal Info" : "ข้อมูลส่วนตัว"} sub={lang === 'en' ? "Name, avatar, and bio" : "ชื่อ รูปโปรไฟล์ และประวัติ"} />
           </Link>
-          <SettingsItem icon={AlertTriangle} title="Security" sub="Password and passkeys" />
-          <SettingsItem icon={QrCode} title="Eco Subscription" sub="Manage your plan" />
+          <SettingsItem icon={AlertTriangle} title={lang === 'en' ? "Security" : "ความปลอดภัย"} sub={lang === 'en' ? "Password and passkeys" : "รหัสผ่านและพาสคีย์"} />
+          <SettingsItem icon={QrCode} title={lang === 'en' ? "Eco Subscription" : "สมาชิก Eco"} sub={lang === 'en' ? "Manage your plan" : "จัดการแผนของคุณ"} />
         </div>
       </section>
 
       <section className="bg-white rounded-3xl border border-slate-100 card-shadow overflow-hidden">
          <div className="bg-slate-50/50 px-8 py-4 border-b border-slate-100">
-           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Preferences</span>
+           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{lang === 'en' ? 'Preferences' : 'การตั้งค่า'}</span>
         </div>
         <div className="divide-y divide-slate-100">
           <div className="px-8 py-6 flex items-center justify-between group">
@@ -883,8 +902,8 @@ function SettingsMain({ user, onLogout }: { user: UserState, onLogout: () => voi
                 <Bell size={20} />
               </div>
               <div>
-                <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">Notifications</p>
-                <p className="text-xs font-medium text-slate-400">Push and email alerts</p>
+                <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">{lang === 'en' ? 'Notifications' : 'การแจ้งเตือน'}</p>
+                <p className="text-xs font-medium text-slate-400">{lang === 'en' ? 'Push and email alerts' : 'การแจ้งเตือนแบบพุชและอีเมล'}</p>
               </div>
             </div>
             <div className="w-12 h-6 bg-primary rounded-full relative p-1 cursor-pointer">
@@ -898,8 +917,8 @@ function SettingsMain({ user, onLogout }: { user: UserState, onLogout: () => voi
                 <Moon size={20} />
               </div>
               <div>
-                <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">Dark Mode</p>
-                <p className="text-xs font-medium text-slate-400">Adaptive interface</p>
+                <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">{lang === 'en' ? 'Dark Mode' : 'โหมดมืด'}</p>
+                <p className="text-xs font-medium text-slate-400">{lang === 'en' ? 'Adaptive interface' : 'ส่วนต่อประสานที่ปรับเปลี่ยนได้'}</p>
               </div>
             </div>
             <div className="w-12 h-6 bg-slate-200 rounded-full relative p-1 cursor-pointer">
@@ -914,13 +933,13 @@ function SettingsMain({ user, onLogout }: { user: UserState, onLogout: () => voi
         className="w-full py-5 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
       >
         <LogOut size={20} />
-        Sign Out
+        {lang === 'en' ? 'Sign Out' : 'ออกจากระบบ'}
       </button>
     </div>
   );
 }
 
-function Settings({ user, setUser }: { user: UserState, setUser: any }) {
+function Settings({ user, setUser, lang }: { user: UserState, setUser: any, lang: Language }) {
   const navigate = useNavigate();
   const onLogout = () => { localStorage.removeItem('eco_auth'); window.location.href = '/login'; };
 
@@ -928,8 +947,8 @@ function Settings({ user, setUser }: { user: UserState, setUser: any }) {
     <PageWrapper>
       <div className="max-w-3xl mx-auto">
         <Routes>
-          <Route index element={<SettingsMain user={user} onLogout={onLogout} />} />
-          <Route path="edit" element={<EditProfilePage user={user} onUpdate={(data) => { setUser({...user, ...data}); navigate('/settings'); }} onCancel={() => navigate('/settings')} />} />
+          <Route index element={<SettingsMain user={user} onLogout={onLogout} lang={lang} />} />
+          <Route path="edit" element={<EditProfilePage user={user} lang={lang} onUpdate={(data) => { setUser({...user, ...data}); navigate('/settings'); }} onCancel={() => navigate('/settings')} />} />
         </Routes>
       </div>
     </PageWrapper>
@@ -977,6 +996,8 @@ export default function App() {
     }
   }, []);
 
+  const [lang, setLang] = useState<Language>('en');
+
   const handleLogin = () => {
     localStorage.setItem('eco_auth', 'true');
     setIsAuth(true);
@@ -1002,25 +1023,25 @@ export default function App() {
   return (
     <Router basename="/Bin-Scan-Better">
       <div className="min-h-screen bg-background text-on-surface selection:bg-emerald-200 selection:text-emerald-900">
-        <Header user={user} />
+        <Header user={user} lang={lang} setLang={setLang} />
         
         <main className="relative">
           <AnimatePresence mode="wait">
             <Routes>
-              <Route path="/login" element={isAuth ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
-              <Route path="/register" element={isAuth ? <Navigate to="/" /> : <RegisterPage onLogin={handleLogin} />} />
+              <Route path="/login" element={isAuth ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} lang={lang} />} />
+              <Route path="/register" element={isAuth ? <Navigate to="/" /> : <RegisterPage onLogin={handleLogin} lang={lang} />} />
               
-              <Route path="/" element={isAuth ? <Dashboard /> : <Navigate to="/login" />} />
-              <Route path="/scan" element={isAuth ? <ScanPage /> : <Navigate to="/login" />} />
-              <Route path="/league" element={isAuth ? <LeaguePage /> : <Navigate to="/login" />} />
-              <Route path="/guide" element={isAuth ? <Guide /> : <Navigate to="/login" />} />
-              <Route path="/history" element={isAuth ? <History /> : <Navigate to="/login" />} />
-              <Route path="/settings/*" element={isAuth ? (user ? <Settings user={user} setUser={setUser} /> : <Navigate to="/login" />) : <Navigate to="/login" />} />
+              <Route path="/" element={isAuth ? <Dashboard lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/scan" element={isAuth ? <ScanPage lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/league" element={isAuth ? <LeaguePage lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/guide" element={isAuth ? <Guide lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/history" element={isAuth ? <History lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/settings/*" element={isAuth ? (user ? <Settings user={user} setUser={setUser} lang={lang} /> : <Navigate to="/login" />) : <Navigate to="/login" />} />
             </Routes>
           </AnimatePresence>
         </main>
 
-        <MobileNav user={user} />
+        <MobileNav user={user} lang={lang} />
       </div>
     </Router>
   );

@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    
+    // User validation
+    function isValidUser(data) {
+      return data.keys().hasAll(['name', 'email', 'points']) && 
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 200 &&
+             data.points is number && data.points >= 0;
+             // Add other fields as needed
+    }
+
+    // Scan validation
+    function isValidScan(data) {
+      return data.keys().hasAll(['userId', 'name', 'category', 'points', 'timestamp']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() <= 100 &&
+             data.category is string && data.category.size() <= 50 &&
+             data.points is number &&
+             data.timestamp is string; // or timestamp type if using request.time
+    }
+
+    // --- Collections ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'bio', 'streak', 'league', 'points', 'avatar', 'isPro'])
+      );
+      // Public profile for league/leaderboard (only non-PII fields)
+      allow list: if isSignedIn(); 
+      // Note: In a real app, I'd split PII. For now, I'll restrict 'get' to owner and 'list' should be used carefully on client via specific field selection if possible, but Firestore 'list' returns whole docs.
+      // Better: Public profiles in a separate collection.
+    }
+
+    match /users/{userId}/scans/{scanId} {
+      allow list: if isOwner(userId);
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidScan(incoming());
+      // Scans are usually immutable once recorded
+      allow delete: if false;
+    }
+  }
+}

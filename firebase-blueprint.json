@@ -1,0 +1,45 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and statistics",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "bio": { "type": "string" },
+        "streak": { "type": "number" },
+        "league": { "type": "string" },
+        "points": { "type": "number" },
+        "avatar": { "type": "string" },
+        "isPro": { "type": "boolean" },
+        "joined": { "type": "string" }
+      },
+      "required": ["name", "email", "points"]
+    },
+    "Scan": {
+      "title": "Scan",
+      "description": "Information about a waste scan activity",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "type": { "type": "string" },
+        "points": { "type": "number" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["userId", "name", "category", "points", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profile record"
+    },
+    "users/{userId}/scans/{scanId}": {
+      "schema": "Scan",
+      "description": "Individual scan record for a user"
+    }
+  }
+}
