@@ -13,7 +13,6 @@ import {
   Settings as SettingsIcon,
   Recycle,
   CheckCircle2,
-  XCircle,
   AlertTriangle,
   Info,
   ChevronRight,
@@ -37,10 +36,7 @@ import {
   Crown,
   Award,
   ChevronLeft,
-  Maximize,
-  ScanLine,
   Sparkles,
-  TrendingUp,
   Timer,
   Box,
   Milk,
@@ -55,9 +51,9 @@ import {
   Soup,
   Battery,
   Cpu,
-  Lightbulb
+  Lightbulb,
+  type LucideIcon
 } from 'lucide-react';
-import * as Icons from 'lucide-react';
 import { cn, WASTE_CATEGORIES, RECENT_SCANS } from './lib/utils';
 import { translations, type Language } from './translations';
 
@@ -73,6 +69,24 @@ interface UserState {
   league: string;
   points: number;
 }
+
+const ITEM_ICON_MAP: Record<string, LucideIcon> = {
+  Box,
+  Milk,
+  FlaskConical,
+  CupSoda,
+  Apple,
+  Coffee,
+  Egg,
+  Leaf,
+  ShoppingBag,
+  WineOff,
+  Baby,
+  Soup,
+  Battery,
+  Cpu,
+  Lightbulb,
+};
 
 // --- Components ---
 
@@ -648,7 +662,7 @@ function Guide({ lang }: { lang: Language }) {
             
             <div className="space-y-2 mb-8">
               {cat.items.map((item: any, idx: number) => {
-                const ItemIcon = (Icons as any)[item.icon] || Info;
+                const ItemIcon = ITEM_ICON_MAP[item.icon] || Info;
                 return (
                   <div key={idx} className="flex items-center gap-3 text-sm font-medium text-slate-600 bg-slate-50 px-4 py-2 rounded-xl group/item">
                     <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm group-hover/item:text-primary transition-colors">
