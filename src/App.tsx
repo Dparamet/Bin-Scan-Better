@@ -586,7 +586,8 @@ function LeaguePage({ lang }: { lang: Language }) {
                 p.isSelf ? "bg-primary/5" : "hover:bg-slate-50/50"
               )}>
                 <div className="flex items-center gap-5">
-                  <div className="w-6 text-center font-bold text-slate-300">
+                  <div className="w-10 text-center font-bold text-slate-300 flex items-center justify-center gap-1">
+                    {p.isSelf && idx < 3 && <Trophy size={14} className="text-amber-500 animate-bounce" />}
                     {idx === 0 ? <Crown size={20} className="text-amber-500 mx-auto" strokeWidth={2.5} /> : idx + 1}
                   </div>
                   <div className="relative group">
