@@ -11,7 +11,7 @@ Check out the live application here: [https://dparamet.github.io/Bin-Scan-Better
 
 - **AI-Powered Scanning**: Instantly identify materials and categories (Plastic, Glass, Organic, etc.) using your camera.
 - **Eco-Sorting Guide**: Learn how to sort waste properly with our comprehensive visual guide.
-- **Gamified Experience**:
+- **gamified Experience**:
   - Earn points for every successful scan.
   - Compete in **Leagues** (Bronze, Silver, Gold).
   - Maintain your **Daily Streak** to unlock rewards.
