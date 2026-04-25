@@ -1000,7 +1000,7 @@ export default function App() {
   };
 
   return (
-    <Router basename="/Scan-Bin-Better">
+    <Router basename="/Bin-Scan-Better">
       <div className="min-h-screen bg-background text-on-surface selection:bg-emerald-200 selection:text-emerald-900">
         <Header user={user} />
         

@@ -1,20 +1,53 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# EcoTrack 🌿
 
-# Run and deploy your AI Studio app
+EcoTrack is a modern, AI-powered waste sorting application designed to help users make a real impact on the environment, one scan at a time.
 
-This contains everything you need to run your app locally.
+[![EcoTrack Preview](https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=1000)](https://dparamet.github.io/Bin-Scan-Better/)
 
-View your app in AI Studio: https://ai.studio/apps/04bdd778-ec7d-4517-a18e-6f11964b1bf2
+## 🚀 Live Demo
+Check out the live application here: [https://dparamet.github.io/Bin-Scan-Better/](https://dparamet.github.io/Bin-Scan-Better/)
 
-## Run Locally
+## ✨ Features
 
-**Prerequisites:**  Node.js
+- **AI-Powered Scanning**: Instantly identify materials and categories (Plastic, Glass, Organic, etc.) using your camera.
+- **Eco-Sorting Guide**: Learn how to sort waste properly with our comprehensive visual guide.
+- **gamified Experience**:
+  - Earn points for every successful scan.
+  - Compete in **Leagues** (Bronze, Silver, Gold).
+  - Maintain your **Daily Streak** to unlock rewards.
+- **Personalized Dashboard**: Track your lifetime impact, CO2 saved, and global rank.
+- **Responsive Design**: Polished, "glassmorphism" UI that works beautifully on mobile and desktop.
 
+## 🛠️ Tech Stack
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **Framework**: React 18+ with Vite
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **Icons Mapping**: Custom Lucide-React mapping for visual category identification.
+- **Deployment**: GitHub Actions (CI/CD)
+
+## 📦 Installation
+
+To run this project locally:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/dparamet/Bin-Scan-Better.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd Bin-Scan-Better
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
