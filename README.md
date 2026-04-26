@@ -19,7 +19,8 @@
 
 ## App Preview
 
-![EcoTrack App Preview](./docs/ecotrack-app-preview.svg)
+![Uploading image.png…]()
+
 
 ---
 
