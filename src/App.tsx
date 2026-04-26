@@ -1255,7 +1255,10 @@ export default function App() {
 
   return (
     <Router basename="/Bin-Scan-Better">
-      <div className="min-h-screen bg-background dark:bg-dark-background text-text-main dark:text-dark-text-main selection:bg-emerald-200 selection:text-emerald-900 transition-colors duration-300">
+      <div className={cn(
+        "min-h-screen bg-background dark:bg-dark-background text-text-main dark:text-dark-text-main selection:bg-emerald-200 selection:text-emerald-900 transition-colors duration-300",
+        isDarkMode && "dark"
+      )}>
         <Header user={user} lang={lang} setLang={setLang} />
         
         <main className="relative">
