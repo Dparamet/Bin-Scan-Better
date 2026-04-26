@@ -15,21 +15,21 @@ service cloud.firestore {
     
     // User validation
     function isValidUser(data) {
-      return data.keys().hasAll(['name', 'email', 'points']) && 
-             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
-             data.email is string && data.email.size() <= 200 &&
-             data.points is number && data.points >= 0;
-             // Add other fields as needed
+      return data.keys().hasAll(['displayName', 'email', 'points', 'createdAt']) && 
+             data.displayName is string && data.displayName.size() > 0 &&
+             data.email is string &&
+             data.points is number && data.points >= 0 &&
+             data.createdAt is timestamp;
     }
 
     // Scan validation
     function isValidScan(data) {
-      return data.keys().hasAll(['userId', 'name', 'category', 'points', 'timestamp']) &&
+      return data.keys().hasAll(['userId', 'itemName', 'category', 'pointsAwarded', 'timestamp']) &&
              data.userId == request.auth.uid &&
-             data.name is string && data.name.size() <= 100 &&
-             data.category is string && data.category.size() <= 50 &&
-             data.points is number &&
-             data.timestamp is string; // or timestamp type if using request.time
+             data.itemName is string &&
+             data.category is string &&
+             data.pointsAwarded is number &&
+             data.timestamp == request.time;
     }
 
     // --- Collections ---
@@ -37,21 +37,18 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow create: if isOwner(userId) && isValidUser(incoming());
-      allow update: if isOwner(userId) && isValidUser(incoming()) && (
-        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'bio', 'streak', 'league', 'points', 'avatar', 'isPro'])
+      allow update: if isOwner(userId) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'bio', 'avatarUrl', 'points', 'streak', 'totalScans', 'co2SavedKg', 'currentLeague', 'updatedAt', 'lastActive'])
       );
-      // Public profile for league/leaderboard (only non-PII fields)
+      // Public leaderboard: only allow listing users if we filter by non-private fields
       allow list: if isSignedIn(); 
-      // Note: In a real app, I'd split PII. For now, I'll restrict 'get' to owner and 'list' should be used carefully on client via specific field selection if possible, but Firestore 'list' returns whole docs.
-      // Better: Public profiles in a separate collection.
     }
 
     match /users/{userId}/scans/{scanId} {
       allow list: if isOwner(userId);
       allow get: if isOwner(userId);
       allow create: if isOwner(userId) && isValidScan(incoming());
-      // Scans are usually immutable once recorded
-      allow delete: if false;
+      allow delete: if false; // Sustainability records are permanent
     }
   }
 }

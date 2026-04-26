@@ -2,44 +2,49 @@
   "entities": {
     "User": {
       "title": "User",
-      "description": "User profile and statistics",
+      "description": "User profile, statistics, and sustainability impact",
       "type": "object",
       "properties": {
-        "name": { "type": "string" },
+        "displayName": { "type": "string" },
         "email": { "type": "string" },
         "bio": { "type": "string" },
-        "streak": { "type": "number" },
-        "league": { "type": "string" },
+        "avatarUrl": { "type": "string" },
         "points": { "type": "number" },
-        "avatar": { "type": "string" },
+        "streak": { "type": "number" },
+        "totalScans": { "type": "number" },
+        "co2SavedKg": { "type": "number" },
+        "currentLeague": { "type": "string" },
         "isPro": { "type": "boolean" },
-        "joined": { "type": "string" }
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "lastActive": { "type": "string", "format": "date-time" }
       },
-      "required": ["name", "email", "points"]
+      "required": ["displayName", "email", "points", "createdAt"]
     },
     "Scan": {
       "title": "Scan",
-      "description": "Information about a waste scan activity",
+      "description": "Record of a waste scan activity and its environmental impact",
       "type": "object",
       "properties": {
         "userId": { "type": "string" },
-        "name": { "type": "string" },
+        "itemName": { "type": "string" },
         "category": { "type": "string" },
-        "type": { "type": "string" },
-        "points": { "type": "number" },
-        "timestamp": { "type": "string" }
+        "pointsAwarded": { "type": "number" },
+        "impactScore": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
       },
-      "required": ["userId", "name", "category", "points", "timestamp"]
+      "required": ["userId", "itemName", "category", "pointsAwarded", "timestamp"]
     }
   },
   "firestore": {
     "users/{userId}": {
       "schema": "User",
-      "description": "User profile record"
+      "description": "User profile with aggregated impact stats"
     },
     "users/{userId}/scans/{scanId}": {
       "schema": "Scan",
-      "description": "Individual scan record for a user"
+      "description": "Detailed history of individual recycling actions"
     }
   }
 }
