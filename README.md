@@ -21,7 +21,6 @@
 
 ![EcoTrack App Preview](./docs/ecotrack-app-preview.svg)
 
-
 ---
 
 ## Live Demo

@@ -60,18 +60,38 @@ import {
 import * as Icons from 'lucide-react';
 import { cn, WASTE_CATEGORIES, RECENT_SCANS } from './lib/utils';
 import { translations, type Language } from './translations';
+import { auth, db } from './firebase';
+import { 
+  onAuthStateChanged, 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  signOut,
+  User as FirebaseUser 
+} from 'firebase/auth';
+import { 
+  doc, 
+  getDoc, 
+  setDoc, 
+  updateDoc, 
+  collection, 
+  addDoc, 
+  serverTimestamp,
+  increment,
+  onSnapshot
+} from 'firebase/firestore';
 
 // --- Types ---
 interface UserState {
-  name: string;
+  displayName: string;
   email: string;
   bio: string;
-  joined: string;
-  avatar: string;
-  isPro: boolean;
-  streak: number;
-  league: string;
+  avatarUrl: string;
   points: number;
+  streak: number;
+  totalScans: number;
+  co2SavedKg: number;
+  currentLeague: string;
+  createdAt: any;
 }
 
 // --- Components ---
@@ -133,11 +153,11 @@ function Header({ user, lang, setLang }: { user: UserState | null, lang: Languag
           <div className="h-6 w-px bg-slate-200" />
           <Link to="/settings" className="flex items-center gap-3 group">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold text-slate-400 leading-none uppercase tracking-widest">{t.level} 12</p>
-              <p className="text-sm font-bold text-slate-900 leading-none mt-1">{user.name.split(' ')[0]}</p>
+              <p className="text-[10px] font-bold text-slate-400 leading-none uppercase tracking-widest">{t.level} {Math.floor(user.points / 500) + 1}</p>
+              <p className="text-sm font-bold text-slate-900 leading-none mt-1">{user.displayName.split(' ')[0]}</p>
             </div>
             <div className="w-9 h-9 rounded-xl overflow-hidden border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
-              <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              <img src={user.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
             </div>
           </Link>
         </nav>
@@ -177,9 +197,20 @@ function PageWrapper({ children }: { children: React.ReactNode }) {
 
 // --- Pages ---
 
-function LoginPage({ onLogin, lang }: { onLogin: () => void, lang: Language }) {
+function LoginPage({ lang }: { lang: Language }) {
   const navigate = useNavigate();
   const t = translations[lang];
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate('/');
+    } catch (error) {
+      console.error("Login failed", error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <motion.div 
@@ -194,39 +225,42 @@ function LoginPage({ onLogin, lang }: { onLogin: () => void, lang: Language }) {
         <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">EcoTrack</h1>
         <p className="text-slate-500 mb-10 font-medium">{t.everyActionCounts}</p>
         
-        <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); navigate('/'); }}>
-          <div className="text-left">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
-              <input 
-                type="email" 
-                placeholder="hello@example.com" 
-                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900"
-                required
-              />
-            </div>
-          </div>
-          <div className="text-left">
-             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Password</label>
-            <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
-              <input 
-                type="password" 
-                placeholder="••••••••" 
-                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900"
-                required
-              />
-            </div>
-          </div>
-          <button className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95 group mt-6">
-            {t.signIn}
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+        <div className="space-y-4">
+          <button 
+            onClick={handleGoogleSignIn}
+            className="w-full py-4 px-6 border-2 border-slate-100 rounded-xl flex items-center justify-center gap-3 font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
+            {lang === 'en' ? 'Continue with Google' : 'ดำเนินการต่อด้วย Google'}
           </button>
-        </form>
+
+          <div className="flex items-center gap-4 py-2">
+            <div className="h-px bg-slate-100 flex-1" />
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{lang === 'en' ? 'or' : 'หรือ'}</span>
+            <div className="h-px bg-slate-100 flex-1" />
+          </div>
+
+          <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); }}>
+            <div className="text-left opacity-50 cursor-not-allowed">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <input 
+                  disabled
+                  type="email" 
+                  placeholder="hello@example.com" 
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 outline-none font-semibold text-slate-900"
+                />
+              </div>
+            </div>
+            <button disabled className="w-full bg-slate-200 text-slate-400 font-bold py-4 rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
+              {t.signIn}
+            </button>
+          </form>
+        </div>
         
-        <p className="mt-10 text-sm text-slate-500 font-medium italic">
-          No account yet? <Link to="/register" className="text-primary font-bold hover:underline not-italic">{t.register}</Link>
+        <p className="mt-10 text-xs text-slate-400 font-medium leading-relaxed italic">
+          {lang === 'en' ? 'Sign in to sync your recycling impact across devices.' : 'ลงชื่อเข้าใช้เพื่อซิงค์ข้อมูลการรีไซเคิลของคุณระหว่างอุปกรณ์'}
         </p>
       </motion.div>
     </div>
@@ -312,7 +346,7 @@ function StatCard({ icon: Icon, label, value, color }: any) {
   );
 }
 
-function Dashboard({ lang }: { lang: Language }) {
+function Dashboard({ user, lang }: { user: UserState, lang: Language }) {
   const navigate = useNavigate();
   const t = translations[lang];
   return (
@@ -350,19 +384,19 @@ function Dashboard({ lang }: { lang: Language }) {
       </section>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
-        <StatCard icon={CheckCircle2} label={t.scans} value="1,248" color="bg-rose-50 text-rose-500" />
-        <StatCard icon={Leaf} label={t.co2Saved} value="342kg" color="bg-emerald-50 text-emerald-500" />
-        <StatCard icon={Trophy} label={t.rank} value="Silver II" color="bg-amber-50 text-amber-500" />
+        <StatCard icon={CheckCircle2} label={t.scans} value={user.totalScans.toLocaleString()} color="bg-rose-50 text-rose-500" />
+        <StatCard icon={Leaf} label={t.co2Saved} value={`${user.co2SavedKg.toFixed(1)}kg`} color="bg-emerald-50 text-emerald-500" />
+        <StatCard icon={Trophy} label={t.rank} value={user.currentLeague} color="bg-amber-50 text-amber-500" />
         <div className="bg-slate-900 p-6 rounded-3xl shadow-xl text-white col-span-2 md:col-span-1 border border-slate-800">
            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t.nextRank}</p>
            <div className="flex justify-between items-end mb-3">
              <span className="text-2xl font-bold italic text-amber-400">Gold</span>
-             <span className="text-xs font-medium text-slate-400">85% complete</span>
+             <span className="text-xs font-medium text-slate-400">{(user.points % 500 / 5) || 0}% complete</span>
            </div>
            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
              <motion.div 
                initial={{ width: 0 }}
-               animate={{ width: '85%' }}
+               animate={{ width: `${(user.points % 500 / 5) || 0}%` }}
                transition={{ duration: 1, delay: 0.5 }}
                className="h-full bg-primary" 
              />
@@ -427,23 +461,51 @@ function Dashboard({ lang }: { lang: Language }) {
   );
 }
 
-function ScanPage({ lang }: { lang: Language }) {
+function ScanPage({ user, lang }: { user: UserState, lang: Language }) {
   const navigate = useNavigate();
   const t = translations[lang];
   const [isScanning, setIsScanning] = useState(true);
   const [result, setResult] = useState<any>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsScanning(false);
-      setResult({
-        name: lang === 'en' ? 'Plastic Water Bottle' : 'ขวดน้ำพลาสติก',
-        category: lang === 'en' ? 'Recyclable' : 'รีไซเคิลได้',
-        points: 15,
-        tip: lang === 'en' ? 'Remove the cap if it is a different type of plastic.' : 'ถอดฝาออกหากเป็นพลาสติกคนละชนิดกัน'
-      });
-    }, 3000);
-    return () => clearTimeout(timer);
+    const performScan = async () => {
+      const timer = setTimeout(async () => {
+        setIsScanning(false);
+        const scanResult = {
+          itemName: lang === 'en' ? 'Plastic Water Bottle' : 'ขวดน้ำพลาสติก',
+          category: lang === 'en' ? 'Recyclable' : 'รีไซเคิลได้',
+          pointsAwarded: 15,
+          impactScore: 0.2, // kg CO2
+          tip: lang === 'en' ? 'Remove the cap if it is a different type of plastic.' : 'ถอดฝาออกหากเป็นพลาสติกคนละชนิดกัน'
+        };
+        setResult(scanResult);
+
+        // Save to Firebase
+        if (auth.currentUser) {
+          try {
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            const scansRef = collection(userRef, 'scans');
+            
+            await addDoc(scansRef, {
+              ...scanResult,
+              userId: auth.currentUser.uid,
+              timestamp: serverTimestamp()
+            });
+
+            await updateDoc(userRef, {
+              points: increment(scanResult.pointsAwarded),
+              totalScans: increment(1),
+              co2SavedKg: increment(scanResult.impactScore),
+              lastActive: serverTimestamp()
+            });
+          } catch (error) {
+            console.error("Failed to save scan", error);
+          }
+        }
+      }, 3000);
+      return () => clearTimeout(timer);
+    };
+    performScan();
   }, [lang]);
 
   return (
@@ -500,7 +562,7 @@ function ScanPage({ lang }: { lang: Language }) {
                     <Sparkles size={32} />
                   </div>
                   <h2 className="text-2xl font-bold text-slate-900 mb-1">{t.success}</h2>
-                  <p className="text-lg font-bold text-primary mb-6">{result.name}</p>
+                  <p className="text-lg font-bold text-primary mb-6">{result.itemName}</p>
                   
                   <div className="bg-slate-50 p-5 rounded-2xl mb-8 text-left space-y-4">
                     <div className="flex justify-between items-center">
@@ -509,7 +571,7 @@ function ScanPage({ lang }: { lang: Language }) {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Points Gained' : 'คะแนนที่ได้รับ'}</span>
-                      <span className="text-lg font-bold text-slate-900">+{result.points}</span>
+                      <span className="text-lg font-bold text-slate-900">+{result.pointsAwarded}</span>
                     </div>
                     <div className="pt-4 border-t border-slate-200">
                       <p className="text-slate-600 text-sm font-medium leading-relaxed italic">"{result.tip}"</p>
@@ -540,17 +602,22 @@ function ScanPage({ lang }: { lang: Language }) {
   );
 }
 
-function LeaguePage({ lang }: { lang: Language }) {
+function LeaguePage({ user: currentUser, lang }: { user: UserState, lang: Language }) {
   const t = translations[lang];
-  const [activeLeague] = useState('Silver');
-  const LEAGUE_PLAYERS = [
-    { id: 1, name: 'EcoHero_99', points: 4250, streak: 15, avatar: 'https://i.pravatar.cc/150?u=1' },
-    { id: 2, name: 'Sarah Jenkins', points: 3840, streak: 12, isSelf: true, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150' },
-    { id: 3, name: 'LeafLover', points: 3120, streak: 8, avatar: 'https://i.pravatar.cc/150?u=3' },
-    { id: 4, name: 'GreenMachine', points: 2900, streak: 4, avatar: 'https://i.pravatar.cc/150?u=4' },
-    { id: 5, name: 'OceanSaver', points: 2450, streak: 20, avatar: 'https://i.pravatar.cc/150?u=5' },
-    { id: 6, name: 'TreePlanter', points: 2100, streak: 2, avatar: 'https://i.pravatar.cc/150?u=6' },
-  ];
+  const [players, setPlayers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const usersRef = collection(db, 'users');
+    // Simple leaderboard query: top 10 by points
+    const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+      const userData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })).sort((a: any, b: any) => (b.points || 0) - (a.points || 0)).slice(0, 10);
+      setPlayers(userData);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <PageWrapper>
@@ -562,15 +629,24 @@ function LeaguePage({ lang }: { lang: Language }) {
           </div>
           <div className="text-center md:text-left flex-1">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-               <span className="text-xs font-bold px-3 py-1 bg-amber-100 text-amber-700 rounded-full uppercase tracking-widest">{activeLeague} {lang === 'en' ? 'League' : 'ลีก'}</span>
+               <span className="text-xs font-bold px-3 py-1 bg-amber-100 text-amber-700 rounded-full uppercase tracking-widest">{currentUser.currentLeague} {lang === 'en' ? 'League' : 'ลีก'}</span>
                <span className="text-xs font-bold text-slate-400">• {lang === 'en' ? 'Season 4' : 'ฤดูกาลที่ 4'}</span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">{lang === 'en' ? "You're in 2nd place!" : "คุณอยู่อันดับที่ 2!"}</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              {players.findIndex(p => p.id === auth.currentUser?.uid) === 0 
+                ? (lang === 'en' ? "You're in 1st place!" : "คุณอยู่อันดับที่ 1!")
+                : (lang === 'en' ? `You're in ${players.findIndex(p => p.id === auth.currentUser?.uid) + 1}th place!` : `คุณอยู่อันดับที่ ${players.findIndex(p => p.id === auth.currentUser?.uid) + 1}!`)}
+            </h1>
             <p className="text-slate-500 font-medium leading-tight">{lang === 'en' ? 'Stay in the top 3 until Sunday to promote to' : 'รักษาอันดับให้อยู่ใน 3 อันดับแรกจนถึงวันอาทิตย์เพื่อเลื่อนระดับไปสู่'} <span className="text-amber-600 font-bold underline decoration-amber-200">{lang === 'en' ? 'Gold League' : 'ลีกระดับทอง'}</span>.</p>
           </div>
           <div className="flex items-center gap-2 text-slate-900 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
-             <Timer size={20} className="text-primary" />
-             <span className="font-bold text-sm tabular-nums">2d 14h 22m</span>
+             <div className="text-right">
+               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Ending In</p>
+               <div className="flex items-center gap-2 mt-1">
+                 <Timer size={16} className="text-primary" />
+                 <span className="font-bold text-sm tabular-nums text-slate-700">2d 14h</span>
+               </div>
+             </div>
           </div>
         </div>
 
@@ -580,32 +656,32 @@ function LeaguePage({ lang }: { lang: Language }) {
             <span className="text-[10px] font-bold text-primary uppercase tracking-widest font-mono">{lang === 'en' ? 'Promotion Zone' : 'โซนเลื่อนระดับ'}</span>
           </div>
           <div className="divide-y divide-slate-100">
-            {LEAGUE_PLAYERS.map((p, idx) => (
+            {players.map((p, idx) => (
               <div key={p.id} className={cn(
                 "p-5 flex items-center justify-between transition-colors",
-                p.isSelf ? "bg-primary/5" : "hover:bg-slate-50/50"
+                p.id === auth.currentUser?.uid ? "bg-primary/5" : "hover:bg-slate-50/50"
               )}>
                 <div className="flex items-center gap-5">
                   <div className="w-10 text-center font-bold text-slate-300 flex items-center justify-center gap-1">
-                    {p.isSelf && idx < 3 && <Trophy size={14} className="text-amber-500 animate-bounce" />}
+                    {p.id === auth.currentUser?.uid && idx < 3 && <Trophy size={14} className="text-amber-500 animate-bounce" />}
                     {idx === 0 ? <Crown size={20} className="text-amber-500 mx-auto" strokeWidth={2.5} /> : idx + 1}
                   </div>
                   <div className="relative group">
-                    <img src={p.avatar} alt={p.name} className="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-sm transition-transform group-hover:scale-105" />
+                    <img src={p.avatarUrl} alt={p.displayName} className="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-sm transition-transform group-hover:scale-105" />
                     {idx < 3 && <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center p-1 border-2 border-white shadow-md"><Award size={10} /></div>}
                   </div>
                   <div>
-                    <p className={cn("font-bold text-slate-900 leading-none", p.isSelf && "text-primary")}>{p.name}</p>
+                    <p className={cn("font-bold text-slate-900 leading-none", p.id === auth.currentUser?.uid && "text-primary")}>{p.displayName}</p>
                     <div className="flex items-center gap-2 mt-2">
                        <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-600 rounded text-[10px] font-bold">
                          <Flame size={10} fill="currentColor" />
-                         {p.streak}d
+                         {p.streak || 0}d
                        </div>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-slate-900 tabular-nums">{p.points.toLocaleString()}</p>
+                  <p className="text-lg font-bold text-slate-900 tabular-nums">{(p.points || 0).toLocaleString()}</p>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono leading-none">PTS</p>
                 </div>
               </div>
@@ -670,8 +746,24 @@ function Guide({ lang }: { lang: Language }) {
   );
 }
 
-function History({ lang }: { lang: Language }) {
+function History({ user, lang }: { user: UserState, lang: Language }) {
   const t = translations[lang];
+  const [scans, setScans] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      const scansRef = collection(db, 'users', auth.currentUser.uid, 'scans');
+      const unsubscribe = onSnapshot(scansRef, (snapshot) => {
+        const scanData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })).sort((a: any, b: any) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+        setScans(scanData);
+      });
+      return () => unsubscribe();
+    }
+  }, []);
+
   return (
     <PageWrapper>
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
@@ -694,8 +786,8 @@ function History({ lang }: { lang: Language }) {
           <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -mr-12 -mt-12 opacity-50" />
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Lifetime Score' : 'คะแนนตลอดชีพ'}</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-slate-900 tracking-tight">2,450</span>
-            <span className="text-xs font-bold text-primary">+{lang === 'en' ? '120 today' : '120 วันนี้'}</span>
+            <span className="text-4xl font-bold text-slate-900 tracking-tight">{user.points.toLocaleString()}</span>
+            <span className="text-xs font-bold text-primary">Total</span>
           </div>
         </div>
         
@@ -703,7 +795,7 @@ function History({ lang }: { lang: Language }) {
           <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 opacity-50" />
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Global Rank' : 'อันดับโลก'}</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-slate-900 tracking-tight">#42</span>
+            <span className="text-4xl font-bold text-slate-900 tracking-tight">#{Math.floor(Math.random() * 100) + 1}</span>
             <span className="text-xs font-bold text-primary">Top 1%</span>
           </div>
         </div>
@@ -715,7 +807,7 @@ function History({ lang }: { lang: Language }) {
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-primary">
               <Leaf size={24} />
             </div>
-            <span className="text-2xl font-bold italic tracking-tight">Earth Guard</span>
+            <span className="text-2xl font-bold italic tracking-tight">{user.currentLeague} Guard</span>
           </div>
         </div>
       </div>
@@ -724,25 +816,23 @@ function History({ lang }: { lang: Language }) {
         <h2 className="text-xl font-bold text-slate-900 mb-8">{t.recentActivity}</h2>
         
         <div className="space-y-6">
-          <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            <Calendar size={12} />
-            {lang === 'en' ? 'Today' : 'วันนี้'}
-          </div>
-          <HistoryItem icon={Droplets} name="PET Plastic Bottle" category="Beverage Container" points={15} time="10:42 AM" />
-          <HistoryItem icon={BookOpen} name="Cardboard Box" category="Packaging" points={20} time="09:15 AM" />
-          
-          <div className="pt-4 flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            <Calendar size={12} />
-            {lang === 'en' ? 'Yesterday' : 'เมื่อวาน'}
-          </div>
-          <HistoryItem icon={Leaf} name="Coffee Cup" category="Compostable Material" points={10} time="02:30 PM" />
-          <HistoryItem icon={Recycle} name="Egg Carton" category="Molded Pulp" points={25} time="11:05 AM" />
-        </div>
-        
-        <div className="mt-12 text-center">
-          <button className="text-primary text-sm font-bold px-10 py-4 bg-primary/5 rounded-2xl hover:bg-primary/10 transition-all active:scale-95">
-            {lang === 'en' ? 'Load More Activity' : 'โหลดกิจกรรมเพิ่มเติม'}
-          </button>
+          {scans.length > 0 ? (
+            scans.map((scan) => (
+              <HistoryItem 
+                key={scan.id}
+                icon={Recycle} 
+                name={scan.itemName} 
+                category={scan.category} 
+                points={scan.pointsAwarded} 
+                time={scan.timestamp ? new Date(scan.timestamp.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now'} 
+              />
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <Recycle size={48} className="text-slate-100 mx-auto mb-4" />
+              <p className="text-slate-400 font-medium">{lang === 'en' ? 'No scans recorded yet. Start recycling!' : 'ยังไม่มีการบันทึกการสแกน เริ่มรีไซเคิลกันเลย!'}</p>
+            </div>
+          )}
         </div>
       </section>
     </PageWrapper>
@@ -769,9 +859,24 @@ function HistoryItem({ icon: Icon, name, category, points, time }: any) {
   );
 }
 
-function EditProfilePage({ user, onUpdate, onCancel, lang }: { user: UserState, onUpdate: (data: Partial<UserState>) => void, onCancel: () => void, lang: Language }) {
-  const [formData, setFormData] = useState({ name: user.name, bio: user.bio, email: user.email });
+function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: (data: Partial<UserState>) => void, onCancel: () => void, lang: Language }) {
+  const [formData, setFormData] = useState({ displayName: user.displayName, bio: user.bio, email: user.email });
   const t = translations[lang];
+
+  const handleUpdate = async () => {
+    if (auth.currentUser) {
+      try {
+        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+          ...formData,
+          updatedAt: serverTimestamp()
+        });
+        onCancel();
+      } catch (error) {
+        console.error("Profile update failed", error);
+      }
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, x: 20 }}
@@ -790,7 +895,7 @@ function EditProfilePage({ user, onUpdate, onCancel, lang }: { user: UserState, 
         <div className="flex flex-col items-center gap-6 pb-10 border-b border-slate-50">
            <div className="relative group">
             <img 
-              src={user.avatar} 
+              src={user.avatarUrl} 
               alt="Profile" 
               className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-xl group-hover:rotate-3 transition-transform"
             />
@@ -806,8 +911,8 @@ function EditProfilePage({ user, onUpdate, onCancel, lang }: { user: UserState, 
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.fullName}</label>
             <input 
               type="text" 
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              value={formData.displayName}
+              onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
               className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary outline-none transition-all font-bold text-slate-900"
             />
           </div>
@@ -824,17 +929,17 @@ function EditProfilePage({ user, onUpdate, onCancel, lang }: { user: UserState, 
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.email}</label>
             <input 
+              disabled
               type="email" 
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary outline-none transition-all font-bold text-slate-900"
+              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-100 font-bold text-slate-400 cursor-not-allowed"
             />
           </div>
         </div>
 
         <div className="flex gap-4 pt-4">
           <button 
-            onClick={() => onUpdate(formData)}
+            onClick={handleUpdate}
             className="flex-1 bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 active:scale-95"
           >
             <Save size={18} />
@@ -858,7 +963,7 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
       <section className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow flex flex-col sm:flex-row items-center sm:items-start gap-8">
         <div className="relative group">
           <img 
-            src={user.avatar} 
+            src={user.avatarUrl} 
             alt="Profile" 
             className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-xl group-hover:rotate-3 transition-transform"
           />
@@ -868,13 +973,13 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
         </div>
         <div className="text-center sm:text-left flex-1">
           <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{user.name}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{user.displayName}</h1>
             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase tracking-widest">Pro</span>
           </div>
           <p className="text-slate-400 font-medium text-sm mb-4">{user.email}</p>
           <p className="text-slate-500 text-sm max-w-sm leading-relaxed">{user.bio}</p>
           <div className="mt-6 pt-6 border-t border-slate-50">
-             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{lang === 'en' ? 'Member since' : 'เป็นสมาชิกตั้งแต่'} {user.joined}</p>
+             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{lang === 'en' ? 'Member since' : 'เป็นสมาชิกตั้งแต่'} {new Date(user.createdAt?.seconds * 1000).getFullYear() || '2023'}</p>
           </div>
         </div>
       </section>
@@ -940,16 +1045,23 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
   );
 }
 
-function Settings({ user, setUser, lang }: { user: UserState, setUser: any, lang: Language }) {
+function Settings({ user, lang }: { user: UserState, lang: Language }) {
   const navigate = useNavigate();
-  const onLogout = () => { localStorage.removeItem('eco_auth'); window.location.href = '/login'; };
+  const onLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+  };
 
   return (
     <PageWrapper>
       <div className="max-w-3xl mx-auto">
         <Routes>
           <Route index element={<SettingsMain user={user} onLogout={onLogout} lang={lang} />} />
-          <Route path="edit" element={<EditProfilePage user={user} lang={lang} onUpdate={(data) => { setUser({...user, ...data}); navigate('/settings'); }} onCancel={() => navigate('/settings')} />} />
+          <Route path="edit" element={<EditProfilePage user={user} lang={lang} onUpdate={() => {}} onCancel={() => navigate('/settings')} />} />
         </Routes>
       </div>
     </PageWrapper>
@@ -976,50 +1088,58 @@ function SettingsItem({ icon: Icon, title, sub }: any) {
 // --- Main App ---
 
 export default function App() {
-  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserState | null>(null);
-
-  useEffect(() => {
-    const authToken = localStorage.getItem('eco_auth');
-    if (authToken) {
-      setIsAuth(true);
-      setUser({
-        name: "Sarah Jenkins",
-        email: "sarah.j@example.com",
-        bio: "Passionate about zero-waste living and sustainable urban development. 🌱",
-        joined: "Jan 2023",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
-        isPro: true,
-        streak: 12,
-        league: "Silver",
-        points: 3840
-      });
-    }
-  }, []);
-
   const [lang, setLang] = useState<Language>('en');
 
-  const handleLogin = () => {
-    localStorage.setItem('eco_auth', 'true');
-    setIsAuth(true);
-    setUser({
-      name: "Sarah Jenkins",
-      email: "sarah.j@example.com",
-      bio: "Passionate about zero-waste living and sustainable urban development. 🌱",
-      joined: "Jan 2023",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200",
-      isPro: true,
-      streak: 12,
-      league: "Silver",
-      points: 3840
-    });
-  };
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const userRef = doc(db, 'users', firebaseUser.uid);
+        
+        // Listen to user document
+        const unsubscribeDoc = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setUser(docSnap.data() as UserState);
+          } else {
+            // Initialize user doc if it doesn't exist
+            const newUser: UserState = {
+              displayName: firebaseUser.displayName || 'Eco Warrior',
+              email: firebaseUser.email || '',
+              bio: "Passionate about zero-waste living and sustainable urban development. 🌱",
+              avatarUrl: firebaseUser.photoURL || `https://i.pravatar.cc/150?u=${firebaseUser.uid}`,
+              points: 0,
+              streak: 0,
+              totalScans: 0,
+              co2SavedKg: 0,
+              currentLeague: "Bronze",
+              createdAt: serverTimestamp(),
+            };
+            setDoc(userRef, newUser);
+          }
+          setLoading(false);
+        });
 
-  const handleLogout = () => {
-    localStorage.removeItem('eco_auth');
-    setIsAuth(false);
-    setUser(null);
-  };
+        return () => unsubscribeDoc();
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Recycle size={48} className="text-primary animate-spin" />
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Loading EcoTrack...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Router basename="/Bin-Scan-Better">
@@ -1029,15 +1149,15 @@ export default function App() {
         <main className="relative">
           <AnimatePresence mode="wait">
             <Routes>
-              <Route path="/login" element={isAuth ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} lang={lang} />} />
-              <Route path="/register" element={isAuth ? <Navigate to="/" /> : <RegisterPage onLogin={handleLogin} lang={lang} />} />
+              <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage lang={lang} />} />
+              <Route path="/register" element={user ? <Navigate to="/" /> : <LoginPage lang={lang} />} />
               
-              <Route path="/" element={isAuth ? <Dashboard lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/scan" element={isAuth ? <ScanPage lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/league" element={isAuth ? <LeaguePage lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/guide" element={isAuth ? <Guide lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/history" element={isAuth ? <History lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/settings/*" element={isAuth ? (user ? <Settings user={user} setUser={setUser} lang={lang} /> : <Navigate to="/login" />) : <Navigate to="/login" />} />
+              <Route path="/" element={user ? <Dashboard user={user} lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/scan" element={user ? <ScanPage user={user} lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/league" element={user ? <LeaguePage lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/guide" element={user ? <Guide lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/history" element={user ? <History lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/settings/*" element={user ? <Settings user={user} lang={lang} /> : <Navigate to="/login" />} />
             </Routes>
           </AnimatePresence>
         </main>
