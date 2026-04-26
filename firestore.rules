@@ -1,7 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Global Safety Net
+    // Default deny
     match /{document=**} {
       allow read, write: if false;
     }
@@ -9,46 +9,42 @@ service cloud.firestore {
     // --- Helpers ---
     function isSignedIn() { return request.auth != null; }
     function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
     function incoming() { return request.resource.data; }
     function existing() { return resource.data; }
-    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
     
-    // User validation
     function isValidUser(data) {
       return data.keys().hasAll(['displayName', 'email', 'points', 'createdAt']) && 
-             data.displayName is string && data.displayName.size() > 0 &&
+             data.displayName is string &&
              data.email is string &&
-             data.points is number && data.points >= 0 &&
-             data.createdAt is timestamp;
-    }
-
-    // Scan validation
-    function isValidScan(data) {
-      return data.keys().hasAll(['userId', 'itemName', 'category', 'pointsAwarded', 'timestamp']) &&
-             data.userId == request.auth.uid &&
-             data.itemName is string &&
-             data.category is string &&
-             data.pointsAwarded is number &&
-             data.timestamp == request.time;
+             data.points is number &&
+             data.isAdmin is bool;
     }
 
     // --- Collections ---
 
+    // Admin lookup collection (Read only by system/admins)
+    match /admins/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+    }
+
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow create: if isOwner(userId) && isValidUser(incoming());
-      allow update: if isOwner(userId) && (
+      // Users can read and write their own data
+      allow get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(incoming()) && incoming().isAdmin == false;
+      allow update: if (isOwner(userId) && (
+        // Users can update their profile but NOT their admin status
         incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'bio', 'avatarUrl', 'points', 'streak', 'totalScans', 'co2SavedKg', 'currentLeague', 'updatedAt', 'lastActive'])
-      );
-      // Public leaderboard: only allow listing users if we filter by non-private fields
-      allow list: if isSignedIn(); 
+      )) || isAdmin();
+      
+      // Leaderboard: Everyone can list users to See names and points
+      allow list: if isSignedIn();
     }
 
     match /users/{userId}/scans/{scanId} {
-      allow list: if isOwner(userId);
-      allow get: if isOwner(userId);
-      allow create: if isOwner(userId) && isValidScan(incoming());
-      allow delete: if false; // Sustainability records are permanent
+      allow list, get: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow delete: if isAdmin(); // Only admins can delete history for cleanup
     }
   }
 }

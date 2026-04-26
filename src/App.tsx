@@ -92,6 +92,7 @@ interface UserState {
   co2SavedKg: number;
   currentLeague: string;
   createdAt: any;
+  isAdmin: boolean;
 }
 
 // --- Components ---
@@ -104,12 +105,12 @@ function NavItem({ to, icon: Icon, label, active }: { to: string, icon: any, lab
         "flex flex-col items-center justify-center transition-all duration-200 px-4 py-2",
         active 
           ? "text-emerald-600 scale-100" 
-          : "text-slate-400 hover:text-emerald-600 scale-95"
+          : "text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 scale-95"
       )}
     >
       <div className={cn(
         "p-1 rounded-xl transition-colors",
-        active && "bg-emerald-50"
+        active && "bg-emerald-50 dark:bg-emerald-500/10"
       )}>
         <Icon size={24} strokeWidth={active ? 2.5 : 2} />
       </div>
@@ -122,41 +123,41 @@ function Header({ user, lang, setLang }: { user: UserState | null, lang: Languag
   const t = translations[lang];
   if (!user) return null;
   return (
-    <header className="sticky top-0 z-50 w-full glass border-b border-slate-100 px-6 py-3">
+    <header className="sticky top-0 z-50 w-full glass border-b border-slate-100 dark:border-dark-border px-6 py-3">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2.5 group">
           <div className="w-9 h-9 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:rotate-12 transition-transform">
             <Recycle size={20} strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900">EcoTrack</span>
+          <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-dark-text-main">EcoTrack</span>
         </Link>
         
         <nav className="hidden md:flex items-center gap-8">
           <div className="flex items-center gap-4">
              <button 
                onClick={() => setLang(lang === 'en' ? 'th' : 'en')}
-               className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 text-slate-600 rounded-full border border-slate-100 hover:bg-slate-100 transition-colors font-bold text-[10px] uppercase tracking-widest"
+               className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full border border-slate-100 dark:border-dark-border hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors font-bold text-[10px] uppercase tracking-widest"
              >
                <Globe size={14} />
                {lang === 'en' ? 'ไทย' : 'ENG'}
              </button>
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 text-orange-600 rounded-full border border-orange-100">
+             <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-full border border-orange-100 dark:border-orange-500/20">
                <Flame size={16} fill="currentColor" />
                <span className="font-bold text-xs">{user.streak} {t.dayStreak}</span>
              </div>
           </div>
           <div className="flex items-center gap-6">
-            <Link to="/" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">{t.dashboard}</Link>
-            <Link to="/league" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">{t.league}</Link>
-            <Link to="/guide" className="text-sm font-semibold text-slate-500 hover:text-primary transition-colors">{t.guide}</Link>
+            <Link to="/" className="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">{t.dashboard}</Link>
+            <Link to="/league" className="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">{t.league}</Link>
+            <Link to="/guide" className="text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">{t.guide}</Link>
           </div>
-          <div className="h-6 w-px bg-slate-200" />
+          <div className="h-6 w-px bg-slate-200 dark:bg-dark-border" />
           <Link to="/settings" className="flex items-center gap-3 group">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold text-slate-400 leading-none uppercase tracking-widest">{t.level} {Math.floor(user.points / 500) + 1}</p>
-              <p className="text-sm font-bold text-slate-900 leading-none mt-1">{user.displayName.split(' ')[0]}</p>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 leading-none uppercase tracking-widest">{t.level} {Math.floor(user.points / 500) + 1}</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-dark-text-main leading-none mt-1">{user.displayName.split(' ')[0]}</p>
             </div>
-            <div className="w-9 h-9 rounded-xl overflow-hidden border-2 border-white shadow-sm group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded-xl overflow-hidden border-2 border-white dark:border-dark-border shadow-sm group-hover:scale-105 transition-transform">
               <img src={user.avatarUrl} alt="Profile" className="w-full h-full object-cover" />
             </div>
           </Link>
@@ -336,12 +337,12 @@ function RegisterPage({ onLogin, lang }: { onLogin: () => void, lang: Language }
 }
 function StatCard({ icon: Icon, label, value, color }: any) {
   return (
-    <div className="bg-white p-5 md:p-6 rounded-3xl border border-slate-100 card-shadow transition-all hover:border-primary/20 group">
+    <div className="bg-white dark:bg-dark-surface p-5 md:p-6 rounded-3xl border border-slate-100 dark:border-dark-border card-shadow transition-all hover:border-primary/20 dark:hover:border-primary/40 group">
       <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110", color)}>
         <Icon size={20} />
       </div>
-      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">{label}</p>
-      <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
+      <p className="text-slate-400 dark:text-dark-text-sub text-[10px] font-bold uppercase tracking-[0.2em]">{label}</p>
+      <p className="text-2xl font-bold text-slate-900 dark:text-dark-text-main mt-1">{value}</p>
     </div>
   );
 }
@@ -351,15 +352,15 @@ function Dashboard({ user, lang }: { user: UserState, lang: Language }) {
   const t = translations[lang];
   return (
     <PageWrapper>
-      <section className="bg-white rounded-3xl border border-slate-100 p-8 md:p-12 mb-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 card-shadow">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 -skew-x-12 translate-x-1/4 pointer-events-none" />
+      <section className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border p-8 md:p-12 mb-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 card-shadow">
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 dark:bg-primary/10 -skew-x-12 translate-x-1/4 pointer-events-none" />
         <div className="relative z-10 max-w-xl text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full mb-6 relative">
             <Sparkles size={14} className="animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-wider">New Challenges Available</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-[1.1] tracking-tight">{t.oneScanAtATime.split(',')[0]}, <span className="text-primary italic">{lang === 'en' ? 'greener' : 'เขียวขจี'}</span> {t.oneScanAtATime.split(',')[1]}</h1>
-          <p className="text-lg text-slate-500 mb-8 leading-relaxed max-w-md">Our AI helps you sort waste instantly. Earn points, compete in leagues, and make a real impact.</p>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-dark-text-main mb-6 leading-[1.1] tracking-tight">{t.oneScanAtATime.split(',')[0]}, <span className="text-primary italic">{lang === 'en' ? 'greener' : 'เขียวขจี'}</span> {t.oneScanAtATime.split(',')[1]}</h1>
+          <p className="text-lg text-slate-500 dark:text-dark-text-sub mb-8 leading-relaxed max-w-md">Our AI helps you sort waste instantly. Earn points, compete in leagues, and make a real impact.</p>
           <div className="flex flex-wrap items-center gap-4 justify-center md:justify-start">
             <button 
               onClick={() => navigate('/scan')}
@@ -368,7 +369,7 @@ function Dashboard({ user, lang }: { user: UserState, lang: Language }) {
               <QrCode size={22} />
               {t.startScanning}
             </button>
-            <button className="px-8 py-4 bg-slate-50 text-slate-600 font-bold rounded-2xl hover:bg-slate-100 transition-all">
+            <button className="px-8 py-4 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all">
               Tutorial
             </button>
           </div>
@@ -378,16 +379,16 @@ function Dashboard({ user, lang }: { user: UserState, lang: Language }) {
           <img 
             src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=1000" 
             alt="Sustainability" 
-            className="w-full h-full object-cover rounded-[40px] shadow-2xl relative z-10"
+            className="w-full h-full object-cover rounded-[40px] shadow-2xl relative z-10 border-4 border-white dark:border-dark-border"
           />
         </div>
       </section>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-12">
-        <StatCard icon={CheckCircle2} label={t.scans} value={user.totalScans.toLocaleString()} color="bg-rose-50 text-rose-500" />
-        <StatCard icon={Leaf} label={t.co2Saved} value={`${user.co2SavedKg.toFixed(1)}kg`} color="bg-emerald-50 text-emerald-500" />
-        <StatCard icon={Trophy} label={t.rank} value={user.currentLeague} color="bg-amber-50 text-amber-500" />
-        <div className="bg-slate-900 p-6 rounded-3xl shadow-xl text-white col-span-2 md:col-span-1 border border-slate-800">
+        <StatCard icon={CheckCircle2} label={t.scans} value={user.totalScans.toLocaleString()} color="bg-rose-50 text-rose-500 dark:bg-rose-500/10 dark:text-rose-400" />
+        <StatCard icon={Leaf} label={t.co2Saved} value={`${user.co2SavedKg.toFixed(1)}kg`} color="bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-400" />
+        <StatCard icon={Trophy} label={t.rank} value={user.currentLeague} color="bg-amber-50 text-amber-500 dark:bg-amber-500/10 dark:text-amber-400" />
+        <div className="bg-slate-900 dark:bg-slate-950 p-6 rounded-3xl shadow-xl text-white col-span-2 md:col-span-1 border border-slate-800 dark:border-slate-800">
            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t.nextRank}</p>
            <div className="flex justify-between items-end mb-3">
              <span className="text-2xl font-bold italic text-amber-400">Gold</span>
@@ -405,45 +406,45 @@ function Dashboard({ user, lang }: { user: UserState, lang: Language }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 shadow-sm p-8 card-shadow">
+        <section className="lg:col-span-2 bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border shadow-sm p-8 card-shadow">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-xl font-bold text-slate-900">{t.recentActivity}</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-dark-text-main">{t.recentActivity}</h2>
             <Link to="/history" className="text-primary text-sm font-bold hover:underline">{t.seeHistory}</Link>
           </div>
           <div className="space-y-3">
             {RECENT_SCANS.slice(0, 4).map((scan) => (
-              <div key={scan.id} className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl hover:bg-slate-50 transition-colors group">
+              <div key={scan.id} className="flex items-center justify-between p-4 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-slate-400 shadow-sm group-hover:text-primary transition-all">
+                  <div className="w-12 h-12 rounded-xl bg-white dark:bg-dark-surface flex items-center justify-center text-slate-400 dark:text-slate-500 shadow-sm group-hover:text-primary transition-all border border-transparent dark:border-dark-border">
                     <Droplets size={20} />
                   </div>
                   <div>
-                    <p className="font-bold text-slate-900 group-hover:text-primary transition-colors">{scan.name}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{scan.category}</p>
+                    <p className="font-bold text-slate-900 dark:text-dark-text-main group-hover:text-primary transition-colors">{scan.name}</p>
+                    <p className="text-[10px] font-bold text-slate-400 dark:text-dark-text-sub uppercase tracking-widest">{scan.category}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                   <p className="text-sm font-bold text-slate-900">+{scan.points || 15} pts</p>
-                   <p className="text-[10px] font-medium text-slate-400">2h ago</p>
+                   <p className="text-sm font-bold text-slate-900 dark:text-dark-text-main">+{scan.points || 15} pts</p>
+                   <p className="text-[10px] font-medium text-slate-400 dark:text-dark-text-sub">2h ago</p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-primary/5 rounded-3xl border border-primary/10 p-8 relative overflow-hidden">
+        <section className="bg-primary/5 dark:bg-primary/10 rounded-3xl border border-primary/10 dark:border-primary/20 p-8 relative overflow-hidden">
           <div className="relative z-10">
             <h2 className="text-xl font-bold text-primary mb-2">{t.dailyGoal}</h2>
-            <p className="text-sm text-primary/70 font-medium mb-6">Scan 5 more items today to keep your streak!</p>
+            <p className="text-sm text-primary/70 dark:text-primary/80 font-medium mb-6">Scan 5 more items today to keep your streak!</p>
             
             <div className="space-y-4">
-              <div className="p-4 bg-white rounded-2xl shadow-sm border border-primary/5 flex items-center gap-4">
-                <div className="w-10 h-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center">
+              <div className="p-4 bg-white dark:bg-dark-surface rounded-2xl shadow-sm border border-primary/5 dark:border-primary/10 flex items-center gap-4">
+                <div className="w-10 h-10 bg-orange-50 dark:bg-orange-500/10 text-orange-500 rounded-xl flex items-center justify-center">
                   <Flame size={20} fill="currentColor" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">Current Streak</p>
-                  <p className="text-xs font-semibold text-slate-500">12 {lang === 'en' ? 'days' : 'วัน'} {lang === 'en' ? 'and counting' : 'และกำลังเพิ่มขึ้น'}</p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-dark-text-main">Current Streak</p>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-dark-text-sub">12 {lang === 'en' ? 'days' : 'วัน'} {lang === 'en' ? 'and counting' : 'และกำลังเพิ่มขึ้น'}</p>
                 </div>
               </div>
               <button 
@@ -513,13 +514,13 @@ function ScanPage({ user, lang }: { user: UserState, lang: Language }) {
       <div className="max-w-2xl mx-auto">
         <button 
           onClick={() => navigate(-1)}
-          className="mb-6 flex items-center gap-2 text-slate-400 font-bold hover:text-primary transition-colors text-sm"
+          className="mb-6 flex items-center gap-2 text-slate-400 dark:text-slate-500 font-bold hover:text-primary transition-colors text-sm"
         >
           <ChevronLeft size={18} />
           {t.back}
         </button>
 
-        <div className="relative aspect-[3/4] bg-slate-950 rounded-[40px] overflow-hidden shadow-2xl border-4 border-white">
+        <div className="relative aspect-[3/4] bg-slate-950 rounded-[40px] overflow-hidden shadow-2xl border-4 border-white dark:border-dark-border">
           <img 
             src="https://images.unsplash.com/photo-1595273670150-db0c3c39243f?auto=format&fit=crop&q=80&w=800" 
             className="w-full h-full object-cover opacity-50"
@@ -557,24 +558,24 @@ function ScanPage({ user, lang }: { user: UserState, lang: Language }) {
                 animate={{ opacity: 1, y: 0 }}
                 className="w-full"
               >
-                <div className="bg-white rounded-[32px] p-8 shadow-2xl text-center">
-                  <div className="w-16 h-16 bg-emerald-50 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="bg-white dark:bg-dark-surface rounded-[32px] p-8 shadow-2xl text-center">
+                  <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-500/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <Sparkles size={32} />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-1">{t.success}</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-dark-text-main mb-1">{t.success}</h2>
                   <p className="text-lg font-bold text-primary mb-6">{result.itemName}</p>
                   
-                  <div className="bg-slate-50 p-5 rounded-2xl mb-8 text-left space-y-4">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-2xl mb-8 text-left space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Category' : 'หมวดหมู่'}</span>
+                      <span className="text-slate-400 dark:text-dark-text-sub font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Category' : 'หมวดหมู่'}</span>
                       <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg font-bold text-[10px] uppercase tracking-wider">{result.category}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Points Gained' : 'คะแนนที่ได้รับ'}</span>
-                      <span className="text-lg font-bold text-slate-900">+{result.pointsAwarded}</span>
+                      <span className="text-slate-400 dark:text-dark-text-sub font-bold uppercase tracking-widest text-[10px]">{lang === 'en' ? 'Points Gained' : 'คะแนนที่ได้รับ'}</span>
+                      <span className="text-lg font-bold text-slate-900 dark:text-dark-text-main">+{result.pointsAwarded}</span>
                     </div>
-                    <div className="pt-4 border-t border-slate-200">
-                      <p className="text-slate-600 text-sm font-medium leading-relaxed italic">"{result.tip}"</p>
+                    <div className="pt-4 border-t border-slate-200 dark:border-dark-border">
+                      <p className="text-slate-600 dark:text-slate-400 text-sm font-medium leading-relaxed italic">"{result.tip}"</p>
                     </div>
                   </div>
                   
@@ -587,7 +588,7 @@ function ScanPage({ user, lang }: { user: UserState, lang: Language }) {
                     </button>
                     <button 
                       onClick={() => setIsScanning(true)}
-                      className="flex-1 bg-slate-100 text-slate-600 font-bold py-4 rounded-xl hover:bg-slate-200 transition-all active:scale-95"
+                      className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold py-4 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95"
                     >
                       {t.scanMore}
                     </button>
@@ -624,58 +625,58 @@ function LeaguePage({ user: currentUser, lang }: { user: UserState, lang: Langua
   return (
     <PageWrapper>
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-[32px] border border-slate-100 p-8 md:p-10 mb-10 card-shadow flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 opacity-50" />
+        <div className="bg-white dark:bg-dark-surface rounded-[32px] border border-slate-100 dark:border-dark-border p-8 md:p-10 mb-10 card-shadow flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 dark:bg-amber-500/5 rounded-full -mr-16 -mt-16 opacity-50" />
           <div className="w-24 h-24 bg-gradient-to-tr from-amber-400 to-amber-600 rounded-3xl flex items-center justify-center text-white shadow-xl shrink-0">
             <Trophy size={48} />
           </div>
           <div className="text-center md:text-left flex-1">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
-               <span className="text-xs font-bold px-3 py-1 bg-amber-100 text-amber-700 rounded-full uppercase tracking-widest">{currentUser.currentLeague} {lang === 'en' ? 'League' : 'ลีก'}</span>
-               <span className="text-xs font-bold text-slate-400">• {lang === 'en' ? 'Season 4' : 'ฤดูกาลที่ 4'}</span>
+               <span className="text-xs font-bold px-3 py-1 bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-full uppercase tracking-widest">{currentUser.currentLeague} {lang === 'en' ? 'League' : 'ลีก'}</span>
+               <span className="text-xs font-bold text-slate-400 dark:text-dark-text-sub">• {lang === 'en' ? 'Season 4' : 'ฤดูกาลที่ 4'}</span>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-dark-text-main mb-2">
               {players.findIndex(p => p.id === auth.currentUser?.uid) === 0 
                 ? (lang === 'en' ? "You're in 1st place!" : "คุณอยู่อันดับที่ 1!")
                 : (lang === 'en' ? `You're in ${players.findIndex(p => p.id === auth.currentUser?.uid) + 1}th place!` : `คุณอยู่อันดับที่ ${players.findIndex(p => p.id === auth.currentUser?.uid) + 1}!`)}
             </h1>
-            <p className="text-slate-500 font-medium leading-tight">{lang === 'en' ? 'Stay in the top 3 until Sunday to promote to' : 'รักษาอันดับให้อยู่ใน 3 อันดับแรกจนถึงวันอาทิตย์เพื่อเลื่อนระดับไปสู่'} <span className="text-amber-600 font-bold underline decoration-amber-200">{lang === 'en' ? 'Gold League' : 'ลีกระดับทอง'}</span>.</p>
+            <p className="text-slate-500 dark:text-dark-text-sub font-medium leading-tight">{lang === 'en' ? 'Stay in the top 3 until Sunday to promote to' : 'รักษาอันดับให้อยู่ใน 3 อันดับแรกจนถึงวันอาทิตย์เพื่อเลื่อนระดับไปสู่'} <span className="text-amber-600 font-bold underline decoration-amber-200 dark:decoration-amber-900">{lang === 'en' ? 'Gold League' : 'ลีกระดับทอง'}</span>.</p>
           </div>
-          <div className="flex items-center gap-2 text-slate-900 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-dark-text-main bg-slate-50 dark:bg-slate-800 px-5 py-3 rounded-2xl border border-slate-100 dark:border-dark-border">
              <div className="text-right">
-               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Ending In</p>
+               <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none">Ending In</p>
                <div className="flex items-center gap-2 mt-1">
                  <Timer size={16} className="text-primary" />
-                 <span className="font-bold text-sm tabular-nums text-slate-700">2d 14h</span>
+                 <span className="font-bold text-sm tabular-nums text-slate-700 dark:text-slate-300">2d 14h</span>
                </div>
              </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-[32px] border border-slate-100 card-shadow overflow-hidden">
-          <div className="px-8 py-4 bg-slate-50/50 border-b border-slate-100 flex justify-between items-center">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">{lang === 'en' ? 'Leaderboard' : 'ตารางผู้นำ'}</span>
+        <div className="bg-white dark:bg-dark-surface rounded-[32px] border border-slate-100 dark:border-dark-border card-shadow overflow-hidden">
+          <div className="px-8 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-dark-border flex justify-between items-center">
+            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">{lang === 'en' ? 'Leaderboard' : 'ตารางผู้นำ'}</span>
             <span className="text-[10px] font-bold text-primary uppercase tracking-widest font-mono">{lang === 'en' ? 'Promotion Zone' : 'โซนเลื่อนระดับ'}</span>
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-dark-border">
             {players.map((p, idx) => (
               <div key={p.id} className={cn(
                 "p-5 flex items-center justify-between transition-colors",
-                p.id === auth.currentUser?.uid ? "bg-primary/5" : "hover:bg-slate-50/50"
+                p.id === auth.currentUser?.uid ? "bg-primary/5 dark:bg-primary/10" : "hover:bg-slate-50/50 dark:hover:bg-slate-800/50"
               )}>
                 <div className="flex items-center gap-5">
-                  <div className="w-10 text-center font-bold text-slate-300 flex items-center justify-center gap-1">
+                  <div className="w-10 text-center font-bold text-slate-300 dark:text-slate-600 flex items-center justify-center gap-1">
                     {p.id === auth.currentUser?.uid && idx < 3 && <Trophy size={14} className="text-amber-500 animate-bounce" />}
                     {idx === 0 ? <Crown size={20} className="text-amber-500 mx-auto" strokeWidth={2.5} /> : idx + 1}
                   </div>
                   <div className="relative group">
-                    <img src={p.avatarUrl} alt={p.displayName} className="w-12 h-12 rounded-2xl object-cover border-2 border-white shadow-sm transition-transform group-hover:scale-105" />
-                    {idx < 3 && <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center p-1 border-2 border-white shadow-md"><Award size={10} /></div>}
+                    <img src={p.avatarUrl} alt={p.displayName} className="w-12 h-12 rounded-2xl object-cover border-2 border-white dark:border-dark-border shadow-sm transition-transform group-hover:scale-105" />
+                    {idx < 3 && <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary text-white rounded-full flex items-center justify-center p-1 border-2 border-white dark:border-dark-border shadow-md"><Award size={10} /></div>}
                   </div>
                   <div>
-                    <p className={cn("font-bold text-slate-900 leading-none", p.id === auth.currentUser?.uid && "text-primary")}>{p.displayName}</p>
+                    <p className={cn("font-bold text-slate-900 dark:text-dark-text-main leading-none", p.id === auth.currentUser?.uid && "text-primary")}>{p.displayName}</p>
                     <div className="flex items-center gap-2 mt-2">
-                       <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-600 rounded text-[10px] font-bold">
+                       <div className="flex items-center gap-1 px-2 py-0.5 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded text-[10px] font-bold">
                          <Flame size={10} fill="currentColor" />
                          {p.streak || 0}d
                        </div>
@@ -683,8 +684,8 @@ function LeaguePage({ user: currentUser, lang }: { user: UserState, lang: Langua
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-slate-900 tabular-nums">{(p.points || 0).toLocaleString()}</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono leading-none">PTS</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-dark-text-main tabular-nums">{(p.points || 0).toLocaleString()}</p>
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-dark-text-sub uppercase tracking-widest font-mono leading-none">PTS</p>
                 </div>
               </div>
             ))}
@@ -700,36 +701,36 @@ function Guide({ lang }: { lang: Language }) {
   return (
     <PageWrapper>
       <div className="max-w-2xl mb-12">
-        <h1 className="text-4xl font-bold text-slate-900 mb-4 tracking-tight">{t.guide}</h1>
-        <p className="text-lg text-slate-500 font-medium">{lang === 'en' ? 'Master the art of sorting. Proper disposal reduces landfill waste by up to 60%.' : 'เก่งเรื่องการคัดแยกขยะ การกำจัดอย่างถูกวิธีช่วยลดขยะในหลุมฝังกลบได้ถึง 60%'}</p>
+        <h1 className="text-4xl font-bold text-slate-900 dark:text-dark-text-main mb-4 tracking-tight">{t.guide}</h1>
+        <p className="text-lg text-slate-500 dark:text-dark-text-sub font-medium">{lang === 'en' ? 'Master the art of sorting. Proper disposal reduces landfill waste by up to 60%.' : 'เก่งเรื่องการคัดแยกขยะ การกำจัดอย่างถูกวิธีช่วยลดขยะในหลุมฝังกลบได้ถึง 60%'}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {WASTE_CATEGORIES.map((cat) => (
           <motion.div 
             key={cat.id}
-            className="rounded-[32px] p-8 border border-slate-100 bg-white card-shadow relative overflow-hidden"
+            className="rounded-[32px] p-8 border border-slate-100 dark:border-dark-border bg-white dark:bg-dark-surface card-shadow relative overflow-hidden"
             whileHover={{ y: -4 }}
           >
             <div className="flex items-center gap-4 mb-6">
               <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-lg", 
                 cat.id === 'recyclable' ? "bg-primary" : 
                 cat.id === 'organic' ? "bg-primary" : 
-                cat.id === 'general' ? "bg-slate-400" : "bg-rose-400"
+                cat.id === 'general' ? "bg-slate-400 dark:bg-slate-600" : "bg-rose-400 dark:bg-rose-600"
               )}>
                  <Recycle size={24} />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">{(t.categories as any)[cat.id] || cat.title}</h2>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-dark-text-main">{(t.categories as any)[cat.id] || cat.title}</h2>
             </div>
             
-            <p className="text-slate-500 mb-6 text-sm leading-relaxed">{cat.description}</p>
+            <p className="text-slate-500 dark:text-dark-text-sub mb-6 text-sm leading-relaxed">{cat.description}</p>
             
             <div className="space-y-2 mb-8">
               {cat.items.map((item: any, idx: number) => {
                 const ItemIcon = (Icons as any)[item.icon] || Info;
                 return (
-                  <div key={idx} className="flex items-center gap-3 text-sm font-medium text-slate-600 bg-slate-50 px-4 py-2 rounded-xl group/item">
-                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm group-hover/item:text-primary transition-colors">
+                  <div key={idx} className="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 px-4 py-2 rounded-xl group/item">
+                    <div className="w-8 h-8 rounded-lg bg-white dark:bg-dark-surface flex items-center justify-center shadow-sm group-hover/item:text-primary transition-colors border border-transparent dark:border-dark-border">
                       <ItemIcon size={16} strokeWidth={2.5} />
                     </div>
                     {item.name}
@@ -738,8 +739,8 @@ function Guide({ lang }: { lang: Language }) {
               })}
             </div>
 
-            <div className="pt-6 border-t border-slate-50 flex items-start gap-2">
-              <span className="text-xs font-medium text-slate-400 leading-tight italic">"{cat.noLimit}"</span>
+            <div className="pt-6 border-t border-slate-50 dark:border-dark-border flex items-start gap-2">
+              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 leading-tight italic">"{cat.noLimit}"</span>
             </div>
           </motion.div>
         ))}
@@ -772,41 +773,41 @@ function History({ user, lang }: { user: UserState, lang: Language }) {
     <PageWrapper>
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight">{t.recentActivity}</h1>
-          <p className="text-slate-500 mt-2 font-medium">{lang === 'en' ? 'Tracking your real-world contribution.' : 'ติดตามการมีส่วนร่วมของคุณในโลกความเป็นจริง'}</p>
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-dark-text-main tracking-tight">{t.recentActivity}</h1>
+          <p className="text-slate-500 dark:text-dark-text-sub mt-2 font-medium">{lang === 'en' ? 'Tracking your real-world contribution.' : 'ติดตามการมีส่วนร่วมของคุณในโลกความเป็นจริง'}</p>
         </div>
         <div className="relative w-full md:w-96">
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input 
             type="text" 
             placeholder={lang === 'en' ? 'Search your logs...' : 'ค้นหาบันทึกของคุณ...'} 
-            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-100 bg-white focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-sm"
+            className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-100 dark:border-dark-border bg-white dark:bg-dark-surface focus:ring-4 focus:ring-primary/5 outline-none transition-all font-bold text-sm text-slate-900 dark:text-dark-text-main"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 card-shadow flex flex-col gap-2 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -mr-12 -mt-12 opacity-50" />
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Lifetime Score' : 'คะแนนตลอดชีพ'}</p>
+        <div className="bg-white dark:bg-dark-surface p-8 rounded-3xl border border-slate-100 dark:border-dark-border card-shadow flex flex-col gap-2 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 dark:bg-rose-500/5 rounded-full -mr-12 -mt-12 opacity-50" />
+          <p className="text-slate-400 dark:text-dark-text-sub text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Lifetime Score' : 'คะแนนตลอดชีพ'}</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-slate-900 tracking-tight">{user.points.toLocaleString()}</span>
+            <span className="text-4xl font-bold text-slate-900 dark:text-dark-text-main tracking-tight">{user.points.toLocaleString()}</span>
             <span className="text-xs font-bold text-primary">Total</span>
           </div>
         </div>
         
-        <div className="bg-white p-8 rounded-3xl border border-slate-100 card-shadow flex flex-col gap-2 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 opacity-50" />
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Global Rank' : 'อันดับโลก'}</p>
+        <div className="bg-white dark:bg-dark-surface p-8 rounded-3xl border border-slate-100 dark:border-dark-border card-shadow flex flex-col gap-2 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 dark:bg-primary/10 rounded-full -mr-12 -mt-12 opacity-50" />
+          <p className="text-slate-400 dark:text-dark-text-sub text-[10px] font-bold uppercase tracking-widest">{lang === 'en' ? 'Global Rank' : 'อันดับโลก'}</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-slate-900 tracking-tight">#{Math.floor(Math.random() * 100) + 1}</span>
+            <span className="text-4xl font-bold text-slate-900 dark:text-dark-text-main tracking-tight">#{Math.floor(Math.random() * 100) + 1}</span>
             <span className="text-xs font-bold text-primary">Top 1%</span>
           </div>
         </div>
 
-        <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden">
+        <div className="bg-slate-900 dark:bg-slate-950 p-8 rounded-3xl text-white shadow-xl relative overflow-hidden border border-slate-800 dark:border-slate-800">
           <div className="absolute top-0 right-0 w-full h-full bg-primary/10 -skew-x-12 translate-x-1/2" />
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">{lang === 'en' ? 'Impact Tier' : 'ระดับผลกระทบ'}</p>
+          <p className="text-slate-400 dark:text-dark-text-sub text-[10px] font-bold uppercase tracking-widest mb-1">{lang === 'en' ? 'Impact Tier' : 'ระดับผลกระทบ'}</p>
           <div className="flex items-center gap-3 relative z-10">
             <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-primary">
               <Leaf size={24} />
@@ -816,8 +817,8 @@ function History({ user, lang }: { user: UserState, lang: Language }) {
         </div>
       </div>
 
-      <section className="bg-white rounded-3xl border border-slate-100 card-shadow p-8">
-        <h2 className="text-xl font-bold text-slate-900 mb-8">{t.recentActivity}</h2>
+      <section className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border card-shadow p-8">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-dark-text-main mb-8">{t.recentActivity}</h2>
         
         <div className="space-y-6">
           {scans.length > 0 ? (
@@ -833,7 +834,7 @@ function History({ user, lang }: { user: UserState, lang: Language }) {
             ))
           ) : (
             <div className="text-center py-12">
-              <Recycle size={48} className="text-slate-100 mx-auto mb-4" />
+              <Recycle size={48} className="text-slate-100 dark:text-slate-800 mx-auto mb-4" />
               <p className="text-slate-400 font-medium">{lang === 'en' ? 'No scans recorded yet. Start recycling!' : 'ยังไม่มีการบันทึกการสแกน เริ่มรีไซเคิลกันเลย!'}</p>
             </div>
           )}
@@ -845,19 +846,19 @@ function History({ user, lang }: { user: UserState, lang: Language }) {
 
 function HistoryItem({ icon: Icon, name, category, points, time }: any) {
   return (
-    <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl hover:bg-slate-50 transition-all group border border-slate-100/50">
+    <div className="flex items-center justify-between p-5 bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group border border-slate-100/50 dark:border-dark-border/50">
       <div className="flex items-center gap-5">
-        <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-slate-400 shadow-sm group-hover:text-primary transition-colors">
+        <div className="w-12 h-12 rounded-xl bg-white dark:bg-dark-surface flex items-center justify-center text-slate-400 dark:text-slate-500 shadow-sm group-hover:text-primary transition-colors border border-transparent dark:border-dark-border">
           <Icon size={24} />
         </div>
         <div>
-          <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">{name}</p>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{category}</p>
+          <p className="font-bold text-slate-900 dark:text-dark-text-main group-hover:text-primary transition-colors leading-none mb-1.5">{name}</p>
+          <p className="text-[10px] font-bold text-slate-400 dark:text-dark-text-sub uppercase tracking-widest">{category}</p>
         </div>
       </div>
       <div className="text-right">
-        <p className="text-lg font-bold text-slate-900 leading-none">+{points}</p>
-        <p className="text-[10px] font-medium text-slate-400 mt-1">{time}</p>
+        <p className="text-lg font-bold text-slate-900 dark:text-dark-text-main leading-none">+{points}</p>
+        <p className="text-[10px] font-medium text-slate-400 dark:text-dark-text-sub mt-1">{time}</p>
       </div>
     </div>
   );
@@ -894,60 +895,60 @@ function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: 
       className="space-y-8"
     >
       <div className="flex items-center gap-4">
-        <button onClick={onCancel} className="p-2.5 hover:bg-slate-100 rounded-xl transition-colors">
-          <ChevronLeft size={20} className="text-slate-500" />
+        <button onClick={onCancel} className="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+          <ChevronLeft size={20} className="text-slate-500 dark:text-slate-400" />
         </button>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{t.editProfile}</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-dark-text-main tracking-tight">{t.editProfile}</h1>
       </div>
 
-      <section className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow space-y-10">
-        <div className="flex flex-col items-center gap-6 pb-10 border-b border-slate-50">
+      <section className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border p-8 card-shadow space-y-10">
+        <div className="flex flex-col items-center gap-6 pb-10 border-b border-slate-50 dark:border-dark-border">
            <div className="relative group">
             <img 
               src={formData.avatarUrl} 
               alt="Profile" 
-              className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-xl group-hover:rotate-3 transition-transform"
+              className="w-28 h-28 rounded-2xl object-cover border-4 border-white dark:border-dark-border shadow-xl group-hover:rotate-3 transition-transform"
             />
           </div>
           <div className="w-full max-w-xs">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">{lang === 'en' ? 'Profile Image URL' : 'URL รูปโปรไฟล์'}</label>
+            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 block mb-2">{lang === 'en' ? 'Profile Image URL' : 'URL รูปโปรไฟล์'}</label>
             <input 
               type="text" 
               value={formData.avatarUrl}
               onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
               placeholder="https://images.unsplash.com/..."
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary outline-none transition-all font-medium text-xs text-slate-600"
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border focus:bg-white dark:focus:bg-dark-surface focus:border-primary outline-none transition-all font-medium text-xs text-slate-600 dark:text-slate-400"
             />
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.fullName}</label>
+            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 block">{t.fullName}</label>
             <input 
               type="text" 
               value={formData.displayName}
               onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary outline-none transition-all font-bold text-slate-900"
+              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border focus:bg-white dark:focus:bg-dark-surface focus:border-primary outline-none transition-all font-bold text-slate-900 dark:text-dark-text-main"
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.bio}</label>
+            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 block">{t.bio}</label>
             <textarea 
               rows={3}
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary outline-none transition-all font-bold text-slate-900 resize-none text-sm"
+              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border focus:bg-white dark:focus:bg-dark-surface focus:border-primary outline-none transition-all font-bold text-slate-900 dark:text-dark-text-main resize-none text-sm"
               placeholder="Tell us about yourself..."
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block">{t.email}</label>
+            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 block">{t.email}</label>
             <input 
               disabled
               type="email" 
               value={formData.email}
-              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 border border-slate-100 font-bold text-slate-400 cursor-not-allowed"
+              className="w-full px-5 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border font-bold text-slate-400 dark:text-slate-600 cursor-not-allowed"
             />
           </div>
         </div>
@@ -962,7 +963,7 @@ function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: 
           </button>
           <button 
             onClick={onCancel}
-            className="flex-1 bg-slate-100 text-slate-500 font-bold py-4 rounded-xl hover:bg-slate-200 transition-all active:scale-95"
+            className="flex-1 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold py-4 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95"
           >
             {t.cancel}
           </button>
@@ -972,7 +973,7 @@ function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: 
   );
 }
 
-function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () => void, lang: Language }) {
+function SettingsMain({ user, onLogout, lang, isDarkMode, setIsDarkMode }: { user: UserState, onLogout: () => void, lang: Language, isDarkMode: boolean, setIsDarkMode: (d: boolean) => void }) {
   const handleReset = async () => {
     if (auth.currentUser && window.confirm(lang === 'en' ? 'Are you sure you want to reset all your progress?' : 'คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตความคืบหน้าทั้งหมด?')) {
       try {
@@ -1032,6 +1033,11 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
           <div onClick={handleReset}>
              <SettingsItem icon={XCircle} title={lang === 'en' ? "Reset Progress" : "รีเซ็ตความคืบหน้า"} sub={lang === 'en' ? "Clear scans, points and rank" : "ล้างการสแกน คะแนน และอันดับ"} />
           </div>
+          {user.isAdmin && (
+            <Link to="/settings/admin" className="block border-t border-slate-100">
+               <SettingsItem icon={Cpu} title={lang === 'en' ? "System Admin" : "ผู้ดูแลระบบ"} sub={lang === 'en' ? "Manage users and system data" : "จัดการผู้ใช้และข้อมูลระบบ"} />
+            </Link>
+          )}
           <SettingsItem icon={Box} title={lang === 'en' ? "Eco Subscription" : "สมาชิก Eco"} sub={lang === 'en' ? "Manage your plan" : "จัดการแผนของคุณ"} />
         </div>
       </section>
@@ -1056,9 +1062,12 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
             </div>
           </div>
           
-          <div className="px-8 py-6 flex items-center justify-between group">
+          <div className="px-8 py-6 flex items-center justify-between group cursor-pointer" onClick={() => setIsDarkMode(!isDarkMode)}>
             <div className="flex items-center gap-5">
-              <div className="w-11 h-11 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+              <div className={cn(
+                "w-11 h-11 rounded-xl flex items-center justify-center transition-all",
+                isDarkMode ? "bg-primary text-white" : "bg-slate-50 text-slate-400 group-hover:bg-primary group-hover:text-white"
+              )}>
                 <Moon size={20} />
               </div>
               <div>
@@ -1066,8 +1075,14 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
                 <p className="text-xs font-medium text-slate-400">{lang === 'en' ? 'Adaptive interface' : 'ส่วนต่อประสานที่ปรับเปลี่ยนได้'}</p>
               </div>
             </div>
-            <div className="w-12 h-6 bg-slate-200 rounded-full relative p-1 cursor-pointer">
-              <div className="absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm" />
+            <div className={cn(
+              "w-12 h-6 rounded-full relative p-1 transition-colors duration-300",
+              isDarkMode ? "bg-primary" : "bg-slate-200"
+            )}>
+              <div className={cn(
+                "w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300",
+                isDarkMode ? "translate-x-6" : "translate-x-0"
+              )} />
             </div>
           </div>
         </div>
@@ -1084,7 +1099,49 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
   );
 }
 
-function Settings({ user, lang }: { user: UserState, lang: Language }) {
+function AdminPanel({ lang }: { lang: Language }) {
+  const [userCount, setUserCount] = useState(0);
+  const [totalPoints, setTotalPoints] = useState(0);
+
+  useEffect(() => {
+    // Only as an example of what an admin can see
+    const usersRef = collection(db, 'users');
+    const unsubscribe = onSnapshot(usersRef, (snapshot) => {
+      setUserCount(snapshot.size);
+      let points = 0;
+      snapshot.forEach(doc => {
+        points += (doc.data().points || 0);
+      });
+      setTotalPoints(points);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-slate-900">{lang === 'en' ? 'Admin Dashboard' : 'แผงควบคุมผู้ดูแลระบบ'}</h2>
+        <span className="px-3 py-1 bg-red-100 text-red-600 rounded-full font-bold text-[10px] uppercase tracking-widest">Master Access</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        <StatCard icon={UserIcon} label="Total Users" value={userCount.toLocaleString()} color="bg-blue-50 text-blue-500" />
+        <StatCard icon={TrendingUp} label="Total Community Points" value={totalPoints.toLocaleString()} color="bg-primary/10 text-primary" />
+      </div>
+
+      <div className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow">
+        <h3 className="text-lg font-bold text-slate-900 mb-6">System Health</h3>
+        <p className="text-slate-500 font-medium">All systems operational. Cloud Firestore connected.</p>
+        <div className="mt-4 flex gap-2">
+          <div className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold font-mono">DB: CONNECTED</div>
+          <div className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold font-mono">AUTH: ACTIVE</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Settings({ user, lang, isDarkMode, setIsDarkMode }: { user: UserState, lang: Language, isDarkMode: boolean, setIsDarkMode: (d: boolean) => void }) {
   const navigate = useNavigate();
   const onLogout = async () => {
     try {
@@ -1099,8 +1156,9 @@ function Settings({ user, lang }: { user: UserState, lang: Language }) {
     <PageWrapper>
       <div className="max-w-3xl mx-auto">
         <Routes>
-          <Route index element={<SettingsMain user={user} onLogout={onLogout} lang={lang} />} />
+          <Route index element={<SettingsMain user={user} onLogout={onLogout} lang={lang} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />} />
           <Route path="edit" element={<EditProfilePage user={user} lang={lang} onUpdate={() => {}} onCancel={() => navigate('/settings')} />} />
+          {user.isAdmin && <Route path="admin" element={<AdminPanel lang={lang} />} />}
         </Routes>
       </div>
     </PageWrapper>
@@ -1130,6 +1188,20 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserState | null>(null);
   const [lang, setLang] = useState<Language>('en');
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -1153,6 +1225,7 @@ export default function App() {
               co2SavedKg: 0,
               currentLeague: "Bronze",
               createdAt: serverTimestamp(),
+              isAdmin: false,
             };
             setDoc(userRef, newUser);
           }
@@ -1196,7 +1269,7 @@ export default function App() {
               <Route path="/league" element={user ? <LeaguePage user={user} lang={lang} /> : <Navigate to="/login" />} />
               <Route path="/guide" element={user ? <Guide lang={lang} /> : <Navigate to="/login" />} />
               <Route path="/history" element={user ? <History user={user} lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/settings/*" element={user ? <Settings user={user} lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/settings/*" element={user ? <Settings user={user} lang={lang} isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} /> : <Navigate to="/login" />} />
             </Routes>
           </AnimatePresence>
         </main>

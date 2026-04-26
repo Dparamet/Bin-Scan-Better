@@ -16,16 +16,31 @@
   --color-text-main: #0f172a; /* Slate 900 */
   --color-text-sub: #64748b; /* Slate 500 */
   --color-text-muted: #94a3b8; /* Slate 400 */
+
+  /* Dark Theme */
+  --color-dark-background: #0f172a; /* Slate 900 */
+  --color-dark-surface: #1e293b; /* Slate 800 */
+  --color-dark-border: #334155; /* Slate 700 */
+  --color-dark-text-main: #f8fafc; /* Slate 50 */
+  --color-dark-text-sub: #94a3b8; /* Slate 400 */
 }
 
 @layer base {
   body {
-    @apply bg-background text-text-main font-sans antialiased;
+    @apply bg-background text-text-main font-sans antialiased transition-colors duration-300;
+  }
+
+  .dark body {
+    @apply bg-dark-background text-dark-text-main;
   }
 }
 
 .glass {
   @apply bg-white/70 backdrop-blur-xl border border-white/20;
+}
+
+.dark .glass {
+  @apply bg-slate-900/70 border-slate-700/50;
 }
 
 .card-shadow {
