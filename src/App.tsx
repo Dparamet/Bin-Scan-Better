@@ -213,54 +213,54 @@ function LoginPage({ lang }: { lang: Language }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-6">
+    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-dark-background p-6 transition-colors duration-300">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-[32px] border border-slate-100 p-10 shadow-2xl relative overflow-hidden text-center"
+        className="w-full max-w-md bg-white dark:bg-dark-surface rounded-[32px] border border-slate-100 dark:border-dark-border p-10 shadow-2xl relative overflow-hidden text-center"
       >
         <div className="absolute top-0 left-0 w-full h-1.5 bg-primary" />
         <div className="inline-flex w-16 h-16 bg-primary/10 text-primary rounded-2xl items-center justify-center mb-8">
           <Recycle size={32} strokeWidth={2.5} />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">EcoTrack</h1>
-        <p className="text-slate-500 mb-10 font-medium">{t.everyActionCounts}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-dark-text-main mb-2 tracking-tight">EcoTrack</h1>
+        <p className="text-slate-500 dark:text-dark-text-sub mb-10 font-medium">{t.everyActionCounts}</p>
         
         <div className="space-y-4">
           <button 
             onClick={handleGoogleSignIn}
-            className="w-full py-4 px-6 border-2 border-slate-100 rounded-xl flex items-center justify-center gap-3 font-bold text-slate-700 hover:bg-slate-50 transition-all active:scale-95"
+            className="w-full py-4 px-6 border-2 border-slate-100 dark:border-dark-border rounded-xl flex items-center justify-center gap-3 font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95"
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
             {lang === 'en' ? 'Continue with Google' : 'ดำเนินการต่อด้วย Google'}
           </button>
 
           <div className="flex items-center gap-4 py-2">
-            <div className="h-px bg-slate-100 flex-1" />
-            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{lang === 'en' ? 'or' : 'หรือ'}</span>
-            <div className="h-px bg-slate-100 flex-1" />
+            <div className="h-px bg-slate-100 dark:bg-dark-border flex-1" />
+            <span className="text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-widest">{lang === 'en' ? 'or' : 'หรือ'}</span>
+            <div className="h-px bg-slate-100 dark:bg-dark-border flex-1" />
           </div>
 
           <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); }}>
             <div className="text-left opacity-50 cursor-not-allowed">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
+              <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600" size={18} />
                 <input 
                   disabled
                   type="email" 
                   placeholder="hello@example.com" 
-                  className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 outline-none font-semibold text-slate-900"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border outline-none font-semibold text-slate-900 dark:text-dark-text-main"
                 />
               </div>
             </div>
-            <button disabled className="w-full bg-slate-200 text-slate-400 font-bold py-4 rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
+            <button disabled className="w-full bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 font-bold py-4 rounded-xl flex items-center justify-center gap-3 cursor-not-allowed">
               {t.signIn}
             </button>
           </form>
         </div>
         
-        <p className="mt-10 text-xs text-slate-400 font-medium leading-relaxed italic">
+        <p className="mt-10 text-xs text-slate-400 dark:text-dark-text-sub font-medium leading-relaxed italic">
           {lang === 'en' ? 'Sign in to sync your recycling impact across devices.' : 'ลงชื่อเข้าใช้เพื่อซิงค์ข้อมูลการรีไซเคิลของคุณระหว่างอุปกรณ์'}
         </p>
       </motion.div>
@@ -272,63 +272,63 @@ function RegisterPage({ onLogin, lang }: { onLogin: () => void, lang: Language }
   const navigate = useNavigate();
   const t = translations[lang];
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-6">
+    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-dark-background p-6 transition-colors duration-300">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-[32px] border border-slate-100 p-10 shadow-2xl relative overflow-hidden text-center"
+        className="w-full max-w-md bg-white dark:bg-dark-surface rounded-[32px] border border-slate-100 dark:border-dark-border p-10 shadow-2xl relative overflow-hidden text-center"
       >
         <div className="absolute top-0 left-0 w-full h-1.5 bg-primary" />
         <div className="inline-flex w-16 h-16 bg-primary/10 text-primary rounded-2xl items-center justify-center mb-8">
           <Leaf size={32} strokeWidth={2.5} />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2 tracking-tight">{t.joinEcoTrack}</h1>
-        <p className="text-slate-500 mb-10 font-medium">{t.everyActionCounts}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-dark-text-main mb-2 tracking-tight">{t.joinEcoTrack}</h1>
+        <p className="text-slate-500 dark:text-dark-text-sub mb-10 font-medium">{t.everyActionCounts}</p>
         
         <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); navigate('/'); }}>
           <div className="text-left">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.fullName}</label>
+            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 mb-2 block">{t.fullName}</label>
             <div className="relative group">
-              <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
+              <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-primary transition-colors" size={18} />
               <input 
                 type="text" 
                 placeholder="Sarah Jenkins" 
-                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900"
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border focus:bg-white dark:focus:bg-dark-surface focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900 dark:text-dark-text-main"
                 required
               />
             </div>
           </div>
           <div className="text-left">
-             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
+             <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 mb-2 block">{t.email}</label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-primary transition-colors" size={18} />
               <input 
                 type="email" 
                 placeholder="sarah.j@example.com" 
-                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900"
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border focus:bg-white dark:focus:bg-dark-surface focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900 dark:text-dark-text-main"
                 required
               />
             </div>
           </div>
           <div className="text-left">
-             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Create Password</label>
+             <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 mb-2 block">Create Password</label>
             <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary transition-colors" size={18} />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-primary transition-colors" size={18} />
               <input 
                 type="password" 
                 placeholder="••••••••" 
-                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900"
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-dark-border focus:bg-white dark:focus:bg-dark-surface focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all font-semibold text-slate-900 dark:text-dark-text-main"
                 required
               />
             </div>
           </div>
-          <button className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95 group mt-6">
+          <button className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-xl shadow-slate-900/10 dark:shadow-none active:scale-95 group mt-6">
             {t.joinEcoTrack}
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </form>
         
-        <p className="mt-10 text-sm text-slate-500 font-medium italic">
+        <p className="mt-10 text-sm text-slate-500 dark:text-dark-text-sub font-medium italic">
           Already a member? <Link to="/login" className="text-primary font-bold hover:underline not-italic">{t.signIn}</Link>
         </p>
       </motion.div>
@@ -998,43 +998,43 @@ function SettingsMain({ user, onLogout, lang, isDarkMode, setIsDarkMode }: { use
 
   return (
     <div className="space-y-8">
-      <section className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow flex flex-col sm:flex-row items-center sm:items-start gap-8">
+      <section className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border p-8 card-shadow flex flex-col sm:flex-row items-center sm:items-start gap-8">
         <div className="relative group">
           <img 
             src={user.avatarUrl} 
             alt="Profile" 
-            className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-xl group-hover:rotate-3 transition-transform"
+            className="w-28 h-28 rounded-2xl object-cover border-4 border-white dark:border-dark-border shadow-xl group-hover:rotate-3 transition-transform"
           />
-          <Link to="/settings/edit" className="absolute -bottom-2 -right-2 p-2.5 bg-primary text-white rounded-xl shadow-lg border-2 border-white active:scale-90 transition-all">
+          <Link to="/settings/edit" className="absolute -bottom-2 -right-2 p-2.5 bg-primary text-white rounded-xl shadow-lg border-2 border-white dark:border-dark-border active:scale-90 transition-all">
             <Camera size={16} />
           </Link>
         </div>
         <div className="text-center sm:text-left flex-1">
           <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{user.displayName}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-dark-text-main tracking-tight">{user.displayName}</h1>
             <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase tracking-widest">Pro</span>
           </div>
-          <p className="text-slate-400 font-medium text-sm mb-4">{user.email}</p>
-          <p className="text-slate-500 text-sm max-w-sm leading-relaxed">{user.bio}</p>
-          <div className="mt-6 pt-6 border-t border-slate-50">
-             <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{lang === 'en' ? 'Member since' : 'เป็นสมาชิกตั้งแต่'} {new Date(user.createdAt?.seconds * 1000).getFullYear() || '2023'}</p>
+          <p className="text-slate-400 dark:text-dark-text-sub font-medium text-sm mb-4">{user.email}</p>
+          <p className="text-slate-500 dark:text-dark-text-sub text-sm max-w-sm leading-relaxed">{user.bio}</p>
+          <div className="mt-6 pt-6 border-t border-slate-50 dark:border-dark-border">
+             <p className="text-[10px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">{lang === 'en' ? 'Member since' : 'เป็นสมาชิกตั้งแต่'} {new Date(user.createdAt?.seconds * 1000).getFullYear() || '2023'}</p>
           </div>
         </div>
       </section>
 
-      <section className="bg-white rounded-3xl border border-slate-100 card-shadow overflow-hidden">
-        <div className="bg-slate-50/50 px-8 py-4 border-b border-slate-100">
-           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{lang === 'en' ? 'Account Management' : 'การจัดการบัญชี'}</span>
+      <section className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border card-shadow overflow-hidden">
+        <div className="bg-slate-50/50 dark:bg-slate-800/50 px-8 py-4 border-b border-slate-100 dark:border-dark-border">
+           <span className="text-[10px] font-bold text-slate-400 dark:text-dark-text-sub uppercase tracking-[0.2em]">{lang === 'en' ? 'Account Management' : 'การจัดการบัญชี'}</span>
         </div>
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-dark-border">
           <Link to="/settings/edit" className="block">
              <SettingsItem icon={UserIcon} title={lang === 'en' ? "Personal Info" : "ข้อมูลส่วนตัว"} sub={lang === 'en' ? "Name, avatar, and bio" : "ชื่อ รูปโปรไฟล์ และประวัติ"} />
           </Link>
-          <div onClick={handleReset}>
-             <SettingsItem icon={XCircle} title={lang === 'en' ? "Reset Progress" : "รีเซ็ตความคืบหน้า"} sub={lang === 'en' ? "Clear scans, points and rank" : "ล้างการสแกน คะแนน และอันดับ"} />
+          <div onClick={onLogout}>
+             <SettingsItem icon={LogOut} title={lang === 'en' ? "Sign Out" : "ออกจากระบบ"} sub={lang === 'en' ? "Logout of your account" : "ออกจากระบบบัญชีของคุณ"} />
           </div>
           {user.isAdmin && (
-            <Link to="/settings/admin" className="block border-t border-slate-100">
+            <Link to="/settings/admin" className="block border-t border-slate-100 dark:border-dark-border">
                <SettingsItem icon={Cpu} title={lang === 'en' ? "System Admin" : "ผู้ดูแลระบบ"} sub={lang === 'en' ? "Manage users and system data" : "จัดการผู้ใช้และข้อมูลระบบ"} />
             </Link>
           )}
@@ -1042,19 +1042,19 @@ function SettingsMain({ user, onLogout, lang, isDarkMode, setIsDarkMode }: { use
         </div>
       </section>
 
-      <section className="bg-white rounded-3xl border border-slate-100 card-shadow overflow-hidden">
-         <div className="bg-slate-50/50 px-8 py-4 border-b border-slate-100">
-           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{lang === 'en' ? 'Preferences' : 'การตั้งค่า'}</span>
+      <section className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border card-shadow overflow-hidden">
+         <div className="bg-slate-50/50 dark:bg-slate-800/50 px-8 py-4 border-b border-slate-100 dark:border-dark-border">
+           <span className="text-[10px] font-bold text-slate-400 dark:text-dark-text-sub uppercase tracking-[0.2em]">{lang === 'en' ? 'Preferences' : 'การตั้งค่า'}</span>
         </div>
-        <div className="divide-y divide-slate-100">
-          <div className="px-8 py-6 flex items-center justify-between group">
+        <div className="divide-y divide-slate-100 dark:divide-dark-border">
+          <div className="px-8 py-6 flex items-center justify-between group cursor-pointer">
             <div className="flex items-center gap-5">
-              <div className="w-11 h-11 rounded-xl bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+              <div className="w-11 h-11 rounded-xl bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
                 <Bell size={20} />
               </div>
               <div>
-                <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">{lang === 'en' ? 'Notifications' : 'การแจ้งเตือน'}</p>
-                <p className="text-xs font-medium text-slate-400">{lang === 'en' ? 'Push and email alerts' : 'การแจ้งเตือนแบบพุชและอีเมล'}</p>
+                <p className="font-bold text-slate-900 dark:text-dark-text-main group-hover:text-primary transition-colors leading-none mb-1.5">{lang === 'en' ? 'Notifications' : 'การแจ้งเตือน'}</p>
+                <p className="text-xs font-medium text-slate-400 dark:text-dark-text-sub">{lang === 'en' ? 'Push and email alerts' : 'การแจ้งเตือนแบบพุชและอีเมล'}</p>
               </div>
             </div>
             <div className="w-12 h-6 bg-primary rounded-full relative p-1 cursor-pointer">
@@ -1065,19 +1065,19 @@ function SettingsMain({ user, onLogout, lang, isDarkMode, setIsDarkMode }: { use
           <div className="px-8 py-6 flex items-center justify-between group cursor-pointer" onClick={() => setIsDarkMode(!isDarkMode)}>
             <div className="flex items-center gap-5">
               <div className={cn(
-                "w-11 h-11 rounded-xl flex items-center justify-center transition-all",
-                isDarkMode ? "bg-primary text-white" : "bg-slate-50 text-slate-400 group-hover:bg-primary group-hover:text-white"
+                "w-11 h-11 rounded-xl flex items-center justify-center transition-all shadow-sm",
+                isDarkMode ? "bg-primary text-white" : "bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 group-hover:bg-primary group-hover:text-white"
               )}>
                 <Moon size={20} />
               </div>
               <div>
-                <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5">{lang === 'en' ? 'Dark Mode' : 'โหมดมืด'}</p>
-                <p className="text-xs font-medium text-slate-400">{lang === 'en' ? 'Adaptive interface' : 'ส่วนต่อประสานที่ปรับเปลี่ยนได้'}</p>
+                <p className="font-bold text-slate-900 dark:text-dark-text-main group-hover:text-primary transition-colors leading-none mb-1.5">{lang === 'en' ? 'Dark Mode' : 'โหมดมืด'}</p>
+                <p className="text-xs font-medium text-slate-400 dark:text-dark-text-sub">{lang === 'en' ? 'Adaptive interface' : 'ส่วนต่อประสานที่ปรับเปลี่ยนได้'}</p>
               </div>
             </div>
             <div className={cn(
               "w-12 h-6 rounded-full relative p-1 transition-colors duration-300",
-              isDarkMode ? "bg-primary" : "bg-slate-200"
+              isDarkMode ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"
             )}>
               <div className={cn(
                 "w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-300",
@@ -1090,7 +1090,7 @@ function SettingsMain({ user, onLogout, lang, isDarkMode, setIsDarkMode }: { use
 
       <button 
         onClick={onLogout}
-        className="w-full py-5 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+        className="w-full py-5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-xl shadow-slate-900/10 dark:shadow-none active:scale-95"
       >
         <LogOut size={20} />
         {lang === 'en' ? 'Sign Out' : 'ออกจากระบบ'}
@@ -1129,12 +1129,12 @@ function AdminPanel({ lang }: { lang: Language }) {
         <StatCard icon={TrendingUp} label="Total Community Points" value={totalPoints.toLocaleString()} color="bg-primary/10 text-primary" />
       </div>
 
-      <div className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow">
-        <h3 className="text-lg font-bold text-slate-900 mb-6">System Health</h3>
-        <p className="text-slate-500 font-medium">All systems operational. Cloud Firestore connected.</p>
+      <div className="bg-white dark:bg-dark-surface rounded-3xl border border-slate-100 dark:border-dark-border p-8 card-shadow">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-dark-text-main mb-6">System Health</h3>
+        <p className="text-slate-500 dark:text-dark-text-sub font-medium">All systems operational. Cloud Firestore connected.</p>
         <div className="mt-4 flex gap-2">
-          <div className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold font-mono">DB: CONNECTED</div>
-          <div className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-xs font-bold font-mono">AUTH: ACTIVE</div>
+          <div className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-bold font-mono">DB: CONNECTED</div>
+          <div className="px-3 py-1 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-bold font-mono">AUTH: ACTIVE</div>
         </div>
       </div>
     </div>
@@ -1167,17 +1167,17 @@ function Settings({ user, lang, isDarkMode, setIsDarkMode }: { user: UserState, 
 
 function SettingsItem({ icon: Icon, title, sub }: any) {
   return (
-    <div className="w-full px-8 py-6 flex items-center justify-between hover:bg-slate-50 transition-all group text-left cursor-pointer">
+    <div className="w-full px-8 py-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group text-left cursor-pointer">
       <div className="flex items-center gap-5">
-        <div className="w-11 h-11 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+        <div className="w-11 h-11 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
           <Icon size={20} />
         </div>
         <div>
-          <p className="font-bold text-slate-900 group-hover:text-primary transition-colors leading-none mb-1.5 uppercase tracking-wider text-[10px]">{title}</p>
-          <p className="text-xs font-medium text-slate-400">{sub}</p>
+          <p className="font-bold text-slate-900 dark:text-dark-text-main group-hover:text-primary transition-colors leading-none mb-1.5 uppercase tracking-wider text-[10px]">{title}</p>
+          <p className="text-xs font-medium text-slate-400 dark:text-dark-text-sub">{sub}</p>
         </div>
       </div>
-      <ChevronRight size={16} className="text-slate-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+      <ChevronRight size={16} className="text-slate-200 dark:text-slate-700 group-hover:text-primary group-hover:translate-x-1 transition-all" />
     </div>
   );
 }
@@ -1255,7 +1255,7 @@ export default function App() {
 
   return (
     <Router basename="/Bin-Scan-Better">
-      <div className="min-h-screen bg-background text-on-surface selection:bg-emerald-200 selection:text-emerald-900">
+      <div className="min-h-screen bg-background dark:bg-dark-background text-text-main dark:text-dark-text-main selection:bg-emerald-200 selection:text-emerald-900 transition-colors duration-300">
         <Header user={user} lang={lang} setLang={setLang} />
         
         <main className="relative">
