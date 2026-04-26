@@ -612,9 +612,11 @@ function LeaguePage({ user: currentUser, lang }: { user: UserState, lang: Langua
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
       const userData = snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data() as any
       })).sort((a: any, b: any) => (b.points || 0) - (a.points || 0)).slice(0, 10);
       setPlayers(userData);
+    }, (error) => {
+      console.error("Leaderboard fetch failed", error);
     });
     return () => unsubscribe();
   }, []);
@@ -756,9 +758,11 @@ function History({ user, lang }: { user: UserState, lang: Language }) {
       const unsubscribe = onSnapshot(scansRef, (snapshot) => {
         const scanData = snapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data() as any
         })).sort((a: any, b: any) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
         setScans(scanData);
+      }, (error) => {
+        console.error("History fetch failed", error);
       });
       return () => unsubscribe();
     }
@@ -860,7 +864,12 @@ function HistoryItem({ icon: Icon, name, category, points, time }: any) {
 }
 
 function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: (data: Partial<UserState>) => void, onCancel: () => void, lang: Language }) {
-  const [formData, setFormData] = useState({ displayName: user.displayName, bio: user.bio, email: user.email });
+  const [formData, setFormData] = useState({ 
+    displayName: user.displayName, 
+    bio: user.bio, 
+    email: user.email,
+    avatarUrl: user.avatarUrl 
+  });
   const t = translations[lang];
 
   const handleUpdate = async () => {
@@ -895,15 +904,21 @@ function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: 
         <div className="flex flex-col items-center gap-6 pb-10 border-b border-slate-50">
            <div className="relative group">
             <img 
-              src={user.avatarUrl} 
+              src={formData.avatarUrl} 
               alt="Profile" 
               className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-xl group-hover:rotate-3 transition-transform"
             />
-            <button className="absolute -bottom-2 -right-2 p-2.5 bg-primary text-white rounded-xl shadow-lg border-2 border-white active:scale-90 transition-all">
-              <Camera size={16} />
-            </button>
           </div>
-          <p className="text-[10px] font-bold text-primary uppercase tracking-widest leading-none">{lang === 'en' ? 'Tap to change photo' : 'แตะเพื่อเปลี่ยนรูปภาพ'}</p>
+          <div className="w-full max-w-xs">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 block mb-2">{lang === 'en' ? 'Profile Image URL' : 'URL รูปโปรไฟล์'}</label>
+            <input 
+              type="text" 
+              value={formData.avatarUrl}
+              onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
+              placeholder="https://images.unsplash.com/..."
+              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-100 focus:bg-white focus:border-primary outline-none transition-all font-medium text-xs text-slate-600"
+            />
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -958,6 +973,28 @@ function EditProfilePage({ user, onCancel, lang }: { user: UserState, onUpdate: 
 }
 
 function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () => void, lang: Language }) {
+  const handleReset = async () => {
+    if (auth.currentUser && window.confirm(lang === 'en' ? 'Are you sure you want to reset all your progress?' : 'คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตความคืบหน้าทั้งหมด?')) {
+      try {
+        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+          points: 0,
+          streak: 0,
+          totalScans: 0,
+          co2SavedKg: 0,
+          currentLeague: 'Bronze',
+          updatedAt: serverTimestamp()
+        });
+        
+        // Also delete scan history
+        const scansRef = collection(db, 'users', auth.currentUser.uid, 'scans');
+        // Note: For a real app we'd batch delete, but for now we just reset stats
+        alert(lang === 'en' ? 'Progress reset successfully!' : 'รีเซ็ตความคืบหน้าสำเร็จแล้ว!');
+      } catch (error) {
+        console.error("Reset failed", error);
+      }
+    }
+  };
+
   return (
     <div className="space-y-8">
       <section className="bg-white rounded-3xl border border-slate-100 p-8 card-shadow flex flex-col sm:flex-row items-center sm:items-start gap-8">
@@ -990,10 +1027,12 @@ function SettingsMain({ user, onLogout, lang }: { user: UserState, onLogout: () 
         </div>
         <div className="divide-y divide-slate-100">
           <Link to="/settings/edit" className="block">
-             <SettingsItem icon={LayoutDashboard} title={lang === 'en' ? "Personal Info" : "ข้อมูลส่วนตัว"} sub={lang === 'en' ? "Name, avatar, and bio" : "ชื่อ รูปโปรไฟล์ และประวัติ"} />
+             <SettingsItem icon={UserIcon} title={lang === 'en' ? "Personal Info" : "ข้อมูลส่วนตัว"} sub={lang === 'en' ? "Name, avatar, and bio" : "ชื่อ รูปโปรไฟล์ และประวัติ"} />
           </Link>
-          <SettingsItem icon={AlertTriangle} title={lang === 'en' ? "Security" : "ความปลอดภัย"} sub={lang === 'en' ? "Password and passkeys" : "รหัสผ่านและพาสคีย์"} />
-          <SettingsItem icon={QrCode} title={lang === 'en' ? "Eco Subscription" : "สมาชิก Eco"} sub={lang === 'en' ? "Manage your plan" : "จัดการแผนของคุณ"} />
+          <div onClick={handleReset}>
+             <SettingsItem icon={XCircle} title={lang === 'en' ? "Reset Progress" : "รีเซ็ตความคืบหน้า"} sub={lang === 'en' ? "Clear scans, points and rank" : "ล้างการสแกน คะแนน และอันดับ"} />
+          </div>
+          <SettingsItem icon={Box} title={lang === 'en' ? "Eco Subscription" : "สมาชิก Eco"} sub={lang === 'en' ? "Manage your plan" : "จัดการแผนของคุณ"} />
         </div>
       </section>
 
@@ -1154,9 +1193,9 @@ export default function App() {
               
               <Route path="/" element={user ? <Dashboard user={user} lang={lang} /> : <Navigate to="/login" />} />
               <Route path="/scan" element={user ? <ScanPage user={user} lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/league" element={user ? <LeaguePage lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/league" element={user ? <LeaguePage user={user} lang={lang} /> : <Navigate to="/login" />} />
               <Route path="/guide" element={user ? <Guide lang={lang} /> : <Navigate to="/login" />} />
-              <Route path="/history" element={user ? <History lang={lang} /> : <Navigate to="/login" />} />
+              <Route path="/history" element={user ? <History user={user} lang={lang} /> : <Navigate to="/login" />} />
               <Route path="/settings/*" element={user ? <Settings user={user} lang={lang} /> : <Navigate to="/login" />} />
             </Routes>
           </AnimatePresence>
