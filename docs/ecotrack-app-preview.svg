@@ -1,0 +1,8 @@
+<svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" rx="20" fill="#F8FAFC"/>
+  <rect x="200" y="50" width="400" height="300" rx="40" fill="white" stroke="#E2E8F0" stroke-width="8"/>
+  <text x="400" y="180" font-family="sans-serif" font-size="24" font-weight="bold" fill="#10B981" text-anchor="middle">EcoTrack</text>
+  <text x="400" y="220" font-family="sans-serif" font-size="16" fill="#64748B" text-anchor="middle">AI-Powered Waste Sorting</text>
+  <circle cx="400" cy="120" r="30" fill="#10B981" fill-opacity="0.1"/>
+  <path d="M390 120L397 127L410 114" stroke="#10B981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
